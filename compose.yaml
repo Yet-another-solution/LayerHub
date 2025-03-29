@@ -1,0 +1,6 @@
+﻿services:
+  layerhub.api:
+    image: layerhub.api
+    build:
+      context: .
+      dockerfile: LayerHub.Api/Dockerfile

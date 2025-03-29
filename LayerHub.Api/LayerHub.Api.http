@@ -1,0 +1,6 @@
+@LayerHub.Api_HostAddress = http://localhost:5070
+
+GET {{LayerHub.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
