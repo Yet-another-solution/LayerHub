@@ -4,3 +4,22 @@
     build:
       context: .
       dockerfile: LayerHub.Api/Dockerfile
+  layerhub.web:
+    image: layerhub.web
+    build:
+      context: .
+      dockerfile: LayerHub.Web/Dockerfile
+  postgres:
+    image: postgres:latest
+    container_name: bozp-home
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=LayerHub
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

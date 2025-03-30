@@ -1,0 +1,26 @@
+using AutoMapper;
+using LayerHub.Shared.Dto.Tenant;
+using LayerHub.Shared.Dto.User;
+using LayerHub.Shared.Models;
+using LayerHub.Shared.Models.Identity;
+using LayerHub.Shared.Utils;
+
+namespace LayerHub.Api.Core.Domain.Mapping;
+
+public class MappingProfile : Profile
+{
+    public MappingProfile()
+    {
+        // User
+        CreateMap<ApplicationUser, UserDto>();
+        CreateMap<PaginatedList<ApplicationUser>, PaginatedList<UserDto>>()
+            .ConvertUsing<PagedListConverter<ApplicationUser, UserDto>>();
+
+        // Tenant
+        CreateMap<Tenant, TenantDto>();
+        CreateMap<NewTenantDto, Tenant>();
+        CreateMap<UpdateTenantDto, Tenant>();
+        CreateMap<PaginatedList<Tenant>, PaginatedList<TenantDto>>()
+            .ConvertUsing<PagedListConverter<Tenant, TenantDto>>();
+    }
+}
