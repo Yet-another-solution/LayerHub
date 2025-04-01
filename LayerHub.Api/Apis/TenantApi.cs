@@ -13,7 +13,7 @@ public static class TenantApi
 {
     public static RouteGroupBuilder AddTenantApi(this IEndpointRouteBuilder app)
     {
-        var api = app.MapGroup("Blog");
+        var api = app.MapGroup("Tenant");
 
         api.MapGet("/", GetTenants)
             .WithName("Get Tenants");
