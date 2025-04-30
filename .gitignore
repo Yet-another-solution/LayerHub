@@ -57,3 +57,5 @@ TestResult.xml
 nunit-*.xml
 
 .idea/
+/LayerHub.sln.DotSettings
+/LayerHub.sln.DotSettings.user
