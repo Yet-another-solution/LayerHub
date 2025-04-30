@@ -20,6 +20,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LayerHub.Api.Tests", "Layer
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LayerHub.Web", "LayerHub.Web\LayerHub.Web.csproj", "{7D26B638-0A02-4E9D-8BBE-A13E74ACD6B7}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{BC8628E2-5930-465B-B75B-C674B159E681}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Community.Blazor.MapLibre", "Libraries\Community.Blazor.MapLibre\Community.Blazor.MapLibre.csproj", "{D8D773EF-548D-41A9-ABE1-020C96381836}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -50,8 +54,13 @@ Global
 		{7D26B638-0A02-4E9D-8BBE-A13E74ACD6B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7D26B638-0A02-4E9D-8BBE-A13E74ACD6B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7D26B638-0A02-4E9D-8BBE-A13E74ACD6B7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D8D773EF-548D-41A9-ABE1-020C96381836}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D8D773EF-548D-41A9-ABE1-020C96381836}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D8D773EF-548D-41A9-ABE1-020C96381836}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D8D773EF-548D-41A9-ABE1-020C96381836}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{4690AF88-F7D9-47F2-9531-953668197988} = {0122EF2B-C3FD-41D9-A255-0901538ED1C1}
+		{D8D773EF-548D-41A9-ABE1-020C96381836} = {BC8628E2-5930-465B-B75B-C674B159E681}
 	EndGlobalSection
 EndGlobal
