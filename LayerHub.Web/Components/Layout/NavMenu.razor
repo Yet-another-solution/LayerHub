@@ -1,33 +1,38 @@
-﻿<div class="top-row navbar navbar-dark rounded-top bg-success">
-    <div class="container-fluid d-flex flex-row justify-content-start gap-3">
-        <img src="/img/logo/logo-red-xs.svg" class="img-fluid"/>
-        <a class="navbar-brand" href="">LayerHub</a>
-    </div>
-</div>
-
-<input type="checkbox" title="Navigation menu" class="navbar-toggler"/>
-
-<div class="nav-scrollable bg-success-subtle" onclick="document.querySelector('.navbar-toggler').click()">
-    <nav class="nav flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <i class="bi bi-house-door-fill me-2 "></i> Home
-            </NavLink>
-        </div>
-    </nav>
-</div>
-
-<div class="bottow-row bg-success-subtle" style="max-height: 3rem; height: 3rem">
-    <div class="bottow-row-content h-100 d-flex flex-row gap-3 justify-content-between px-3 align-items-center">
-        <button class="btn border-0" disabled>
-            EN
-            <i class="bi bi-chevron-expand"></i>
-        </button>
-        <div>
-            <a class="navbar-brand btn" href="/login">
-                Login
-                <i class="bi bi-box-arrow-in-right"></i>
-            </a>
+﻿<div class="nav-menu-container">
+    
+    <div class="top-row navbar navbar-dark rounded bg-success">
+        <div class="container-fluid d-flex flex-row justify-content-start gap-3">
+            <img src="/img/logo/logo-red-xs.svg" class="img-fluid"/>
+            <a class="navbar-brand" href="">LayerHub</a>
         </div>
     </div>
+
+    <input type="checkbox" title="Navigation menu" class="navbar-toggler"/>
+
+    <div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
+        <nav class="nav flex-column">
+            <div class="nav-item">
+                <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                    <i class="bi bi-house-door-fill me-2 "></i> Home
+                </NavLink>
+            </div>
+        </nav>
+    </div>
+
+    <div class="bottow-row bg-success-subtle rounded mt-1" style="max-height: 3rem; height: 3rem">
+        <div class="bottow-row-content h-100 d-flex flex-row gap-3 justify-content-between px-3 align-items-center">
+            <button class="btn border-0" disabled>
+                EN
+                <i class="bi bi-chevron-expand"></i>
+            </button>
+            <div>
+                <a class="navbar-brand btn" href="/login">
+                    Login
+                    <i class="bi bi-box-arrow-in-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
 </div>
+

@@ -11,7 +11,7 @@
       dockerfile: LayerHub.Web/Dockerfile
   postgres:
     image: postgres:latest
-    container_name: bozp-home
+    container_name: layerhub-home
     environment:
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=password
