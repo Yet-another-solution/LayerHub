@@ -1,7 +1,22 @@
 ﻿@page "/"
+@using Community.Blazor.MapLibre.Models
 
 <PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
+<MapLibre Options="_mapOptions" Class="rounded-top"
+          Height="100vh" @rendermode="InteractiveServer" />
 
-Welcome to your new app.
+@code
+{
+    private readonly MapOptions _mapOptions = new()
+    {
+        Container = "UniqueMapId",
+        Style = "https://demotiles.maplibre.org/style.json",
+        Center = new LngLat()
+        {
+            Latitude = -2.320679,
+            Longitude = 112.772537
+        },
+        Zoom = 3
+    };
+}
