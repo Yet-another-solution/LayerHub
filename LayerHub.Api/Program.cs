@@ -6,6 +6,7 @@ using LayerHub.Api.Core.Configuration;
 using LayerHub.Api.Core.Domain.Context;
 using LayerHub.Api.Core.Domain.Mapping;
 using LayerHub.Api.Infrasctructure.Data;
+using LayerHub.Api.Infrasctructure.Initializer;
 using LayerHub.Shared.Dto;
 using LayerHub.Shared.Models.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -64,6 +65,15 @@ builder.Services.AddAuthentication(options =>
 // Add services to the container.
 builder.Services.AddServicesAndRepositories();
 
+// Create a method to initialize the database
+async Task InitializeDatabaseAsync(WebApplication app)
+{
+    using var scope = app.Services.CreateScope();
+    var initializer = scope.ServiceProvider.GetRequiredService<DbInitializer>();
+    await initializer.InitializeAsync();
+}
+
+
 // Add fluent validation
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssemblyContaining(typeof(LoginRequestValidator));
@@ -119,6 +129,8 @@ if (app.Environment.IsDevelopment())
     {
         c.SpecUrl("/openapi/v1.json");
     });
+
+    await InitializeDatabaseAsync(app);
 }
 
 app.UseHttpsRedirection();

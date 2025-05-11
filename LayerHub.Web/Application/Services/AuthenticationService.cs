@@ -45,6 +45,6 @@ public class AuthenticationService : IAuthenticationService
     {
         User = null;
         await _localStorageService.RemoveItemAsync("user");
-        _navigationManager.NavigateTo("login");
+        _navigationManager.NavigateTo("/");
     }
 }

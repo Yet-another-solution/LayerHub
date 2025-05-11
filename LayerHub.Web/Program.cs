@@ -1,3 +1,5 @@
+using Blazored.Toast;
+using LayerHub.Web.Application.Extension;
 using LayerHub.Web.Components;
 using Serilog;
 
@@ -11,6 +13,15 @@ builder.AddServiceDefaults();
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+// Register Services
+builder.Services.AddBlazoredToast();
+builder.Services.AddServicesAndRepositories();
+
+// Set HttpClient
+var globalConfig = builder.Configuration.GetSection("Global");
+builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(globalConfig.GetValue<string>("ApiUrl") ?? throw new NullReferenceException("ApiUrl cannot be null")) });
+
 
 var app = builder.Build();
 

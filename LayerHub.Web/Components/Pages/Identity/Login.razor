@@ -1,8 +1,13 @@
 ﻿@page "/login"
+@using Blazored.Toast.Services
+@using LayerHub.Shared.Dto
+@using LayerHub.Web.Application.Services
 @layout BlankLayout
 
 
 @inject NavigationManager NavigationManager
+@inject IAuthenticationService AuthenticationService
+@inject IToastService ToastService
 
 <PageTitle>Login Page</PageTitle>
 
@@ -13,27 +18,31 @@
         <div class="login-form">
             <h3><b>Log in</b></h3>
             <p class="appName">Layer<b>Hub</b></p>
-            <div  OnValidSubmit="LoginAsync">
+            <EditForm Model="@_loginRequest" OnValidSubmit="LoginAsync" FormName="loginForm">
                 <div class="input-container">
                     <div class="input-group mb-3">
                         <span class="input-group-text"><i class="bi bi-person"></i></span>
-                        <input type="email" class="form-control" placeholder="E-mail"/>
+                        <input type="email" class="form-control" placeholder="E-mail"
+                               @bind="_loginRequest.Email"/>
                     </div>
                     <div class="input-group mb-3">
                         <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                        <input type="password" class="form-control" placeholder="Password" @onkeyup="e => HitEnter(e)"/>
+                        <input type="password" class="form-control" placeholder="Password" @onkeyup="e => HitEnter(e)"
+                               @bind="_loginRequest.Password"/>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <button class="btn btn-success w-100" type="submit">Login</button>
                 </div>
-            </div>
+            </EditForm>
         </div>
     </div>
 </div>
 
 @code {
+    private LoginRequest _loginRequest = new LoginRequest();
+
     private async Task HitEnter(KeyboardEventArgs e)
     {
         if (e.Key == "Enter") 
@@ -42,7 +51,8 @@
     
     private async Task LoginAsync()
     {
-       
+        await AuthenticationService.Login(_loginRequest.Email, _loginRequest.Password, ComponentDetached);
+        ToastService.ShowSuccess("Successfully logged in.");
         NavigationManager.NavigateTo("/", replace: true);
     }
 }

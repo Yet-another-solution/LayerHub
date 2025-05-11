@@ -9,7 +9,8 @@ var postgres = builder.AddPostgres("LayerHub", username, password, port: 5433);
 var postgresdb = postgres.AddDatabase("DefaultConnection");
 
 builder.AddProject<LayerHub_Api>("Api", launchProfileName: "https")
-    .WithReference(postgresdb);
+    .WithReference(postgresdb)
+    .WaitFor(postgresdb);
 
 builder.AddProject<LayerHub_Web>("Web", launchProfileName: "https");
 
