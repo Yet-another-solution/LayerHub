@@ -3,6 +3,7 @@
 
 <PageTitle>Home</PageTitle>
 
+
 <MapLibre Options="_mapOptions" Class="rounded-top"
           Height="100vh" @rendermode="InteractiveServer" />
 
@@ -11,12 +12,13 @@
     private readonly MapOptions _mapOptions = new()
     {
         Container = "UniqueMapId",
-        Style = "https://demotiles.maplibre.org/style.json",
+        Style = "https://tiles.openfreemap.org/styles/liberty",
         Center = new LngLat()
         {
-            Latitude = -2.320679,
-            Longitude = 112.772537
+            Latitude = 48.725837, 
+            Longitude = 18.752835
         },
-        Zoom = 3
+        Zoom = 14, // Start with a default zoom level
+        Pitch = 20
     };
 }
