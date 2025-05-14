@@ -1,0 +1,49 @@
+.page {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+}
+
+.page main {
+    flex: 1;
+}
+
+/* Desktop sidebar */
+.page .sidebar {
+    width: 350px;
+    height: 100vh;
+    position: sticky;
+    top: 0;
+    border-radius: 10px;
+    z-index: 20;
+}
+
+/* Mobile sidebar */
+@media (max-width: 640px) {
+    .page {
+        flex-direction: column;
+    }
+
+    .page .sidebar {
+        position: relative;
+        top: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        height: auto;
+        border-radius: 0 0 10px 10px;
+        z-index: 1000;
+    }
+}
+
+
+#blazor-error-ui {
+    display: none;
+}
+
+#blazor-error-ui .dismiss {
+    cursor: pointer;
+    position: absolute;
+    right: 0.75rem;
+    top: 0.5rem;
+}

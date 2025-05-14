@@ -1,50 +1,66 @@
+using System.Net.Http.Headers;
 using Blazored.LocalStorage;
 using LayerHub.Shared.Dto;
+using LayerHub.Web.Application.Authentication;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 
 namespace LayerHub.Web.Application.Services;
 
 public interface IAuthenticationService
 {
-    AuthResponse? User { get; }
-    Task Initialize();
     Task Login(string username, string password, CancellationToken token);
     Task Logout();
 }
 
 public class AuthenticationService : IAuthenticationService
 {
-    private IHttpService _httpService;
-    private NavigationManager _navigationManager;
-    private ILocalStorageService _localStorageService;
-    public AuthResponse? User { get; private set; }
-
+    private readonly HttpClient _httpClient;
+    private readonly CustomAuthStateProvider _authStateProvider;
+        
     public AuthenticationService(
-        IHttpService httpService,
-        NavigationManager navigationManager,
-        ILocalStorageService localStorageService
-    )
+        HttpClient httpClient, 
+        AuthenticationStateProvider authStateProvider)
     {
-        _httpService = httpService;
-        _navigationManager = navigationManager;
-        _localStorageService = localStorageService;
+        _httpClient = httpClient;
+        _authStateProvider = (CustomAuthStateProvider)authStateProvider;
     }
-
-    public async Task Initialize()
+        
+    public async Task Login(string username, string password, CancellationToken cancellationToken)
     {
-        User = await _localStorageService.GetItemAsync<AuthResponse>("user");
-    }
-
-    public async Task Login(string username, string password, CancellationToken token)
-    {
-        User = await _httpService.Post<AuthResponse>("/Identity/Auth/login", new LoginRequest { Email = username, Password = password }, token);
-        await _localStorageService.SetItemAsync("user", User);
+        // Your existing login logic
+        // Example request structure (adjust based on your actual API):
+        var loginRequest = new LoginRequest()
+        {
+            Email = username,
+            Password = password
+        };
+            
+        var response = await _httpClient.PostAsJsonAsync("/Identity/Auth/login", loginRequest, cancellationToken);
+        response.EnsureSuccessStatusCode();
+            
+        var authResponse = await response.Content.ReadFromJsonAsync<AuthResponse>(cancellationToken: cancellationToken);
+            
+        if (authResponse != null)
+        {
+            // Persist authentication state
+            await _authStateProvider.MarkUserAsAuthenticated(authResponse);
+                
+            // Set bearer token for future API requests
+            _httpClient.DefaultRequestHeaders.Authorization = 
+                new AuthenticationHeaderValue("Bearer", authResponse.Token);
+        }
     }
 
     public async Task Logout()
     {
-        User = null;
-        await _localStorageService.RemoveItemAsync("user");
-        _navigationManager.NavigateTo("/");
+        // Optional: Call logout API endpoint if needed
+            
+        // Clear authentication state
+        await _authStateProvider.MarkUserAsLoggedOut();
+        _httpClient.DefaultRequestHeaders.Authorization = null;
     }
+        
+    // Add other methods as required by IAuthenticationService
 }
+

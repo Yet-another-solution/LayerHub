@@ -1,10 +1,11 @@
-﻿@using LayerHub.Shared.Dto
+﻿@using System.Security.Claims
 @using LayerHub.Web.Application.Services
+@using Microsoft.AspNetCore.Components.Authorization
 @inject IAuthenticationService AuthenticationService
+@inject AuthenticationStateProvider AuthStateProvider
 @inject NavigationManager NavigationManager
 
 <div class="nav-menu-container">
-    
     <div class="top-row navbar navbar-dark rounded bg-success">
         <div class="container-fluid d-flex flex-row justify-content-start gap-3">
             <img src="/img/logo/logo-red-xs.svg" class="img-fluid"/>
@@ -21,76 +22,97 @@
                     <i class="bi bi-house-door-fill me-2 "></i> Home
                 </NavLink>
             </div>
+            
+            <AuthorizeView>
+                <Authorized>
+                    <div class="nav-item">
+                        <NavLink class="nav-link" href="/Manage/Features" Match="NavLinkMatch.All">
+                            <i class="bi bi-pin-map me-2"></i> Features
+                        </NavLink>
+                    </div>
+                </Authorized>
+            </AuthorizeView>
+
         </nav>
     </div>
 
-    @if (_user is not null)
-    {
-        <div class="w-100 d-flex">
-            <div class="btn btn-light d-flex container-fluid flex-row gap-2 p-0" style="cursor: pointer" @onclick="@(_ => EditProfile(_user?.UserId ?? new Guid()))">
-                <div class="text-bg-primary rounded d-flex justify-content-center align-items-center col-auto" style="width: 50px;height: 50px">
-                    <i class="bi bi-person-vcard" style="font-size: 25px"></i>
+    <AuthorizeView>
+        <Authorized>
+            <div class="w-100 d-flex">
+                <div class="btn btn-light d-flex container-fluid flex-row gap-2 p-0" style="cursor: pointer" @onclick="@(_ => EditProfile(context.User.FindFirstValue(ClaimTypes.NameIdentifier)))">
+                    <div class="text-bg-primary rounded d-flex justify-content-center align-items-center col-auto" style="width: 50px;height: 50px">
+                        <i class="bi bi-person-vcard" style="font-size: 25px"></i>
+                    </div>
+                    <div class="col d-flex flex-column justify-content-center text-start">
+                        <span class="fw-bold">
+                            @context.User.FindFirstValue(ClaimTypes.Role)
+                        </span>
+                        <span class="fw-light small">
+                            @context.User.FindFirstValue(ClaimTypes.Email)
+                        </span>
+                    </div>
+                    <div class="col-auto d-flex justify-content-center align-items-center me-2">
+                        <button class="btn btn-light shadow-sm" @onclick="LogoutAsync">
+                            <i class="bi bi-box-arrow-right"></i>
+                        </button>
+                    </div>
                 </div>
-                <div class="col d-flex flex-column justify-content-center text-start">
-                    <span class="fw-bold">
-                        Používateľ
-                    </span>
-                    <span class="fw-light small">
-                        @_user?.Email
-                    </span>
-                </div>
-                <div class="col-auto d-flex justify-content-center align-items-center me-2">
-                    <button class="btn btn-light shadow-sm" @onclick="Logout">
-                        <i class="bi bi-box-arrow-right"></i>
+            </div>
+        </Authorized>
+        <NotAuthorized>
+            <div class="bottow-row bg-success-subtle rounded mt-1" style="max-height: 3rem; height: 3rem">
+                <div class="bottow-row-content h-100 d-flex flex-row gap-3 justify-content-between px-3 align-items-center">
+                    <button class="btn border-0" disabled>
+                        EN
+                        <i class="bi bi-chevron-expand"></i>
                     </button>
+                    <div>
+                        <a class="navbar-brand btn" href="/login">
+                            Login
+                            <i class="bi bi-box-arrow-in-right"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
-        </div>
-    }
-    else
-    {
-        <div class="bottow-row bg-success-subtle rounded mt-1" style="max-height: 3rem; height: 3rem">
-            <div class="bottow-row-content h-100 d-flex flex-row gap-3 justify-content-between px-3 align-items-center">
-                <button class="btn border-0" disabled>
-                    EN
-                    <i class="bi bi-chevron-expand"></i>
-                </button>
-                <div>
-                    <a class="navbar-brand btn" href="/login">
-                        Login
-                        <i class="bi bi-box-arrow-in-right"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
-    }
+        </NotAuthorized>
+    </AuthorizeView>
+
 </div>
 
 
 
 
 @code {
-    private AuthResponse? _user;
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        if (AuthenticationService.User != null)
+        // Subscribe to authentication state changes to trigger UI updates
+        AuthStateProvider.AuthenticationStateChanged += AuthenticationStateChanged;
+    }
+
+    private void AuthenticationStateChanged(Task<AuthenticationState> task)
+    {
+        // Force re-render when authentication state changes
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void EditProfile(string userId)
+    {
+        if (!string.IsNullOrEmpty(userId) && Guid.TryParse(userId, out Guid id))
         {
-            _user = AuthenticationService.User;
-            var jwt = _user.Token;
-        }
-        else
-        {
-            
+            NavigationManager.NavigateTo($"/profile/{id}", replace: true);
         }
     }
-    private void EditProfile(Guid id)
-    {
-        NavigationManager.NavigateTo($"/profile/{id}", replace: true);
-    }
-    private async Task Logout()
+
+    private async Task LogoutAsync()
     {
         await AuthenticationService.Logout();
-        _user = new AuthResponse(){Email = "Not logged in",Token = "Not logged in",UserId = Guid.Empty};
+        NavigationManager.NavigateTo("/", replace: true);
+    }
+    
+    public void Dispose()
+    {
+        // Unsubscribe when component is disposed
+        AuthStateProvider.AuthenticationStateChanged -= AuthenticationStateChanged;
     }
 }
 

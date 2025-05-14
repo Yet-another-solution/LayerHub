@@ -1,5 +1,7 @@
 using Blazored.LocalStorage;
+using LayerHub.Web.Application.Authentication;
 using LayerHub.Web.Application.Services;
+using Microsoft.AspNetCore.Components.Authorization;
 
 namespace LayerHub.Web.Application.Extension;
 
@@ -13,6 +15,10 @@ public static class ServicesAndRepositoryExtension
 
         #endregion
         #region Service
+
+        // Add authentication services
+        services.AddAuthenticationCore();
+        services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
 
         services.AddScoped<IAuthenticationService, AuthenticationService>();
         services.AddScoped<IHttpService, HttpService>();

@@ -1,5 +1,13 @@
 @page "/Manage/Features"
 @using LayerHub.Shared.Dto.MapFeature
+@layout ManageLayout
+
+<PageTitle>Features</PageTitle>
+
+<div mb-3>
+    <h1 class="h1"> Features</h1>
+
+</div>
 
 <PaginatedListView GetUrl="/Feature" EditUrl="/user" T="MapFeatureDto" CancellationToken="ComponentDetached">
     <PropertyColumn TProp="string" TGridItem="MapFeatureDto" Property="@(e => e.Name)"/>
