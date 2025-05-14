@@ -1,4 +1,6 @@
-﻿@inherits LayoutComponentBase
+﻿@using Blazored.Toast.Services
+@inherits LayoutComponentBase
+@inject IToastService ToastService
 
 <ErrorBoundary>
     <ChildContent>
@@ -6,5 +8,6 @@
     </ChildContent>
     <ErrorContent>
         @Body
+        @{ToastService.ShowError(@context.Message);}
     </ErrorContent>
 </ErrorBoundary>

@@ -8,6 +8,7 @@ public static class ApisExtension
     {
         app.AddAuthApi();
         app.AddTenantApi();
+        app.AddMapFeatureApi();
 
         return app;
     }

@@ -9,6 +9,7 @@
 
     <ItemGroup>
         <PackageReference Include="AutoMapper" Version="13.0.1" />
+        <PackageReference Include="CsvHelper" Version="33.0.1" />
         <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
 
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.0" />
@@ -47,6 +48,11 @@
     <ItemGroup>
         <ProjectReference Include="..\LayerHub.Shared\LayerHub.Shared.csproj" />
         <ProjectReference Include="..\ServiceDefaults\ServiceDefaults.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Include="wwwroot\Polygon.csv" />
+      <None Include="wwwroot\Polygon.xlsx" />
     </ItemGroup>
 
 </Project>

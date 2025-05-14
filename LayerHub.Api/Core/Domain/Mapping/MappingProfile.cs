@@ -1,4 +1,5 @@
 using AutoMapper;
+using LayerHub.Shared.Dto.MapFeature;
 using LayerHub.Shared.Dto.Tenant;
 using LayerHub.Shared.Dto.User;
 using LayerHub.Shared.Models;
@@ -22,5 +23,13 @@ public class MappingProfile : Profile
         CreateMap<UpdateTenantDto, Tenant>();
         CreateMap<PaginatedList<Tenant>, PaginatedList<TenantDto>>()
             .ConvertUsing<PagedListConverter<Tenant, TenantDto>>();
+
+        // MapFeature
+        CreateMap<MapFeature, MapFeatureDto>();
+        CreateMap<NewMapFeatureDto, MapFeature>();
+        CreateMap<UpdateMapFeatureDto, MapFeature>();
+        CreateMap<PaginatedList<MapFeature>, PaginatedList<MapFeatureDto>>()
+            .ConvertUsing<PagedListConverter<MapFeature, MapFeatureDto>>();
+
     }
 }

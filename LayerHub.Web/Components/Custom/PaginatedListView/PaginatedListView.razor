@@ -1,0 +1,158 @@
+@namespace LayerHub.Web.Components.Custom.PaginatedListView
+
+@typeparam T
+@inherits Bozp.Web.Shared.Components.Base.CustomComponentBase
+
+<div class="pb-3 d-flex flex-column flex-grow-1">
+    @if (_dataQuery == null)
+    {
+        <div class="d-flex justify-content-between mb-1 rounded shadow-sm px-3 py-2 bg-white">
+            <div class="d-flex gap-2">
+                <div class="input-group">
+                    <span class="input-group-text">
+                    </span>
+                    <input class="form-control" type="text" @bind="@_query" @oninput="@LoadData" disabled/>
+                </div>
+            </div>
+            
+            @if (CreateUrl is not null)
+            {
+                <button class="btn btn-primary flex-shrink-0" disabled @onclick="@(RedirectToCreate)">
+                    <i class="bi bi-plus-square me-1"></i>
+                    Vytvoriť nový
+                </button>
+            }
+            
+            <div class="d-flex gap-2 d-none">
+                <div class="d-flex align-items-center">
+                    <p class="mb-0">
+                        Zoradiť:
+                    </p>
+                </div>
+                <select class="form-select" disabled style="width: 150px">
+                    <option selected>Id</option>
+                </select>
+                <select class="form-select" disabled style="width: 150px">
+                    <option value="asc" selected>Vzostupne</option>
+                    <option value="desc">Zostupne</option>
+                </select>
+            </div>
+        </div>
+        <div class="w-100 d-flex justify-content-center py-5">
+        </div>
+        <div class="d-flex justify-content-between rounded shadow-sm px-3 py-2 bg-white">
+            <div class="col-auto d-flex justify-content-center align-items-center">
+                Počet: <b>@_paginatedList.TotalItems</b> 
+            </div>
+            <div class="col-auto d-flex gap-2">
+                <div class="d-flex">
+                    <div style="line-height: 32px" class="px-3">
+                        Strana <b>@_paginatedList?.PageIndex</b> z <b>@_paginatedList?.TotalPages</b>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    }
+    else
+    {
+        <div class="d-flex justify-content-between mb-1 rounded shadow-sm px-3 py-2 bg-white">
+            <div class="d-flex gap-2">
+                <div class="input-group">
+                    <span class="input-group-text">
+                    </span>
+                    <input class="form-control" type="text" @bind="@_query" @bind:after="@LoadData"/>
+                </div>
+            </div>
+            
+            @if (CreateUrl is not null)
+            {
+                <button class="btn btn-primary flex-shrink-0" @onclick="@(RedirectToCreate)">
+                    <i class="bi bi-plus-square me-1"></i>
+                    Vytvoriť nový
+                </button>
+            }
+            
+            <div class="d-flex gap-2 d-none">
+                <div class="d-flex align-items-center">
+                    <p class="mb-0">
+                        Zoradiť:
+                    </p>
+                </div>
+                <select class="form-select" disabled style="width: 150px">
+                    <option selected>Id</option>
+                </select>
+                <select class="form-select" disabled style="width: 150px">
+                    <option value="asc" selected>Vzostupne</option>
+                    <option value="desc">Zostupne</option>
+                </select>
+            </div>
+
+        </div>
+        
+        <div style="min-height: 450px; max-height: 90vh;" class="overflow-auto rounded shadow-sm mb-1 bg-white flex-grow-1 ">
+            <QuickGrid Items="_dataQuery" 
+                            TGridItem="T" 
+                            GenerateHeader="GenerateHeaderOption.Sticky" 
+                            AutoFit="@(GridTemplateColumns == null)" 
+                            GridTemplateColumns="@GridTemplateColumns">
+                @ChildContent
+                @if (EditUrl is not null || DeleteUrl is not null || DetailsUrl is not null)
+                {
+                    <TemplateColumn Title="Akcie" Class="gap-2 d-flex">
+                        @if (!string.IsNullOrEmpty(DetailsUrl))
+                        {
+                        <button class="btn btn-outline-secondary" @onclick="@(() => RedirectToDetails(context))">
+                            <i class="bi bi-info"></i>
+                            Detaily
+                        </button>
+                        }
+                        @if (!string.IsNullOrEmpty(EditUrl))
+                        {
+                            <button class="btn btn-outline-primary" @onclick="@(() => RedirectToEdit(context))">
+                                <i class="bi bi-pencil"></i>
+                                Upraviť
+                            </button>
+                        }
+                        @if (!string.IsNullOrEmpty(DeleteUrl))
+                        {
+                            <button class="btn btn-outline-danger" @onclick="@(() => Delete(context))">
+                                <i class="bi bi-trash"></i>
+                                Vymazať
+                            </button>
+                        }
+                    </TemplateColumn>
+                }
+            </QuickGrid>
+        </div>
+
+        <div class="d-flex justify-content-between rounded shadow-sm px-3 py-2 bg-white">
+            <div class="col-auto d-flex justify-content-center align-items-center">
+                Počet: <b class="ps-2">@_paginatedList.TotalItems</b> 
+            </div>
+            <div class="col-auto d-flex gap-2">
+                <select class="form-select" @bind=@_numOfItems @bind:after="@LoadData" style="width: 150px">
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                </select>
+
+                <div class="d-flex">
+                    <div class="btn-group">
+                        <button class="btn btn-light" disabled="@(!_paginatedList.HasPreviousPage)" @onclick="@FirstPage"><i class="bi bi-chevron-double-left"></i></button>
+                        <button class="btn btn-light" disabled="@(!_paginatedList.HasPreviousPage)" @onclick="@PrevPage"><i class="bi bi-chevron-left"></i></button>
+                    </div>
+                    <div style="line-height: 32px" class="px-3 flex-shrink-0">
+                        Strana <b>@_paginatedList.PageIndex</b> z <b>@_paginatedList.TotalPages</b>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-light" disabled="@(!_paginatedList.HasNextPage)" @onclick="@NextPage"><i class="bi bi-chevron-right"></i></button>
+                        <button class="btn btn-light" disabled="@(!_paginatedList.HasNextPage)" @onclick="@LastPage"><i class="bi bi-chevron-double-right"></i></button>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    }
+</div>

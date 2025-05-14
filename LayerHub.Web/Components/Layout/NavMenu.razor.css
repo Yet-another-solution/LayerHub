@@ -1,6 +1,6 @@
 .nav-menu-container {
     padding: 1em;
-    background: rgba(255, 255, 255, 0.75);
+    background: rgba(255, 255, 255, 0.85);
     border-radius: 16px 16px 0 0;
     display: flex;
     flex-direction: column;

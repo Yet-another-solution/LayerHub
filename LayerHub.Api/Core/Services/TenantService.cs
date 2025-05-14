@@ -39,7 +39,7 @@ public class TenantService : ITenantService
             throw new NotFoundException("Tenant not found");
         }
 
-        return await _tenantRepository.Get(id);
+        return tenant;
     }
 
     public async Task<Tenant> Create(NewTenantDto dto)

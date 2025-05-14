@@ -1,4 +1,5 @@
 using LayerHub.Api.Core.Domain.Context;
+using LayerHub.Api.Infrasctructure.Data.Conventions;
 using LayerHub.Api.Infrasctructure.Util;
 using LayerHub.Shared.Models;
 using LayerHub.Shared.Models.Identity;
@@ -16,6 +17,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
     private readonly TimeProvider _now;
 
     public virtual DbSet<Tenant> Tenants { get; set; } = default!;
+    // Models
+    public virtual DbSet<MapFeature> MapFeatures { get; set; } = default!;
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -64,6 +67,12 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
             });
 
         base.OnModelCreating(builder);
+    }
+
+    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+    {
+        base.ConfigureConventions(configurationBuilder);
+        configurationBuilder.Conventions.Add(_ => new GuidV7Convention());
     }
 
     void OnEntityTracked(object? sender, EntityTrackedEventArgs e)

@@ -14,12 +14,14 @@ public static class ServicesAndRepositoryExtension
         #region Repository
 
         services.AddScoped<ITenantRepository, TenantRepository>();
+        services.AddScoped<IMapFeatureRepository, MapFeatureRepository>();
 
         #endregion
         #region Service
 
         services.AddScoped<IJwtService, JwtService>();
         services.AddScoped<ITenantService, TenantService>();
+        services.AddScoped<IMapFeatureService, MapFeatureService>();
 
         #endregion
 
