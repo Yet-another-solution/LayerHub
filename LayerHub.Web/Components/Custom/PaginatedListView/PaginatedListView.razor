@@ -1,7 +1,9 @@
+@using Microsoft.FluentUI.AspNetCore.Components
+
 @namespace LayerHub.Web.Components.Custom.PaginatedListView
 
 @typeparam T
-@inherits Bozp.Web.Shared.Components.Base.CustomComponentBase
+@inherits CustomComponentBase
 
 <div class="pb-3 d-flex flex-column flex-grow-1">
     @if (_dataQuery == null)
@@ -10,6 +12,7 @@
             <div class="d-flex gap-2">
                 <div class="input-group">
                     <span class="input-group-text">
+                        <i class="bi bi-search"></i>
                     </span>
                     <input class="form-control" type="text" @bind="@_query" @oninput="@LoadData" disabled/>
                 </div>
@@ -60,6 +63,7 @@
             <div class="d-flex gap-2">
                 <div class="input-group">
                     <span class="input-group-text">
+                        <i class="bi bi-search"></i>
                     </span>
                     <input class="form-control" type="text" @bind="@_query" @bind:after="@LoadData"/>
                 </div>
@@ -91,7 +95,7 @@
         </div>
         
         <div style="min-height: 450px; max-height: 90vh;" class="overflow-auto rounded shadow-sm mb-1 bg-white flex-grow-1 ">
-            <QuickGrid Items="_dataQuery" 
+            <FluentDataGrid Items="_dataQuery" 
                             TGridItem="T" 
                             GenerateHeader="GenerateHeaderOption.Sticky" 
                             AutoFit="@(GridTemplateColumns == null)" 
@@ -123,7 +127,7 @@
                         }
                     </TemplateColumn>
                 }
-            </QuickGrid>
+            </FluentDataGrid>
         </div>
 
         <div class="d-flex justify-content-between rounded shadow-sm px-3 py-2 bg-white">

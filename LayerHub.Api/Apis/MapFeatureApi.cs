@@ -1,3 +1,4 @@
+using System.Text.Json;
 using AutoMapper;
 using LayerHub.Api.Core.Domain.Exceptions;
 using LayerHub.Api.Core.Services.Interfaces;
@@ -58,6 +59,8 @@ public static class MapFeatureApi
         {
             throw new NotFoundException();
         }
+        var dto = mapper.Map<MapFeatureDto>(feature);
+        Console.WriteLine(JsonSerializer.Serialize(dto));
 
         return TypedResults.Ok(mapper.Map<MapFeatureDto>(feature));
     }

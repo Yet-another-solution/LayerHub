@@ -1,0 +1,136 @@
+@page "/Manage/Features/{id:guid}/Edit"
+@using System.Text.Json
+@using Community.Blazor.MapLibre.Models
+@using Community.Blazor.MapLibre.Models.Camera
+@using Community.Blazor.MapLibre.Models.Feature
+@using Community.Blazor.MapLibre.Models.Layers
+@using Community.Blazor.MapLibre.Models.Sources
+@using LayerHub.Shared.Dto.MapFeature
+@using LayerHub.Web.Application.Services
+
+@layout ManageLayout
+
+@inject IHttpService HttpService
+
+<h3>Edit</h3>
+
+<div class="d-flex gap-3 flex-sm-row flex-column">
+    <CustomCard Class="col-sm-4">
+        @if (MapFeatureDto is not null)
+        {
+            <CustomEditForm T="MapFeatureDto" 
+                            Object="UpdateMapFeatureDto"
+                            PutUrl=@($"/Feature/{Id}")>
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="nameInput" @bind="UpdateMapFeatureDto.Name">
+                    <label for="nameInput">Name:</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="displayNameInput" @bind="UpdateMapFeatureDto.DisplayName" />
+                    <label for="displayNameInput">Display name:</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <textarea class="form-control" id="descriptionInput" @bind="UpdateMapFeatureDto.Description" style="height: 90px"></textarea>
+                    <label for="descriptionInput">Description</label>
+                </div>
+                <div class="form-floating">
+                    <textarea class="form-control" id="jsonInput" style="height: 90px" disabled>
+                        @JsonSerializer.Serialize(UpdateMapFeatureDto.GeometryJson)
+                    </textarea>
+                    <label for="jsonInput">Json</label>
+                </div>
+            </CustomEditForm>
+            
+        }
+    </CustomCard>
+    
+    <MapLibre @ref="Map" Options="_mapOptions" Class="rounded"
+              Height="30vh" @rendermode="InteractiveServer" OnLoad="OnMapLoad"/>
+</div>
+
+
+
+@code
+{
+    private MapLibre Map { get; set; } = new MapLibre();
+    
+    private readonly MapOptions _mapOptions = new()
+    {
+        Container = "UniqueMapId",
+        Style = "https://tiles.openfreemap.org/styles/liberty",
+        Center = new LngLat()
+        {
+            Latitude = 48.725837, 
+            Longitude = 18.752835
+        },
+        Zoom = 14, // Start with a default zoom level
+        Pitch = 20
+    };
+
+    private async Task OnMapLoad(EventArgs obj)
+    {
+            var polygon = new FeatureFeature()
+            {
+                Geometry = JsonSerializer.Deserialize<IGeometry>(UpdateMapFeatureDto.GeometryJson)
+            };
+
+            await Map.AddSource("maine", new GeoJsonSource()
+            {
+                Data = new FeatureCollection()
+                {
+                    Features = new List<IFeature>()
+                    {
+                        polygon
+                    }
+                }
+            });
+
+            await Map.AddLayer(new FillLayer()
+            {
+                Id = "GeoJsonLayerId",
+                Source = "maine",
+                Paint = new FillLayerPaint()
+                {
+                    FillColor = "#088",
+                    FillOpacity = 0.8,
+                    FillOutlineColor = "#008888"
+                }
+            });
+
+            // Get the coordinates from the polygon
+            var bounds = polygon.GetBounds();
+
+            // Options for fit bounds
+            var fitBoundsOptions = new FitBoundOptions
+            {
+                Padding = 50, // Add padding around the bounds (in pixels)
+                MaxZoom = 19 // Optional: limit max zoom level
+            };
+
+            // Fit the map to the bounds
+            await Map.FitBounds(bounds, fitBoundsOptions);
+    }
+
+    [Parameter] 
+    public Guid Id { get; set; }
+
+    public MapFeatureDto MapFeatureDto { get; set; }
+    public UpdateMapFeatureDto UpdateMapFeatureDto { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        MapFeatureDto = await HttpService.Get<MapFeatureDto>($"Feature/{Id}");
+        UpdateMapFeatureDto = new UpdateMapFeatureDto
+        {
+            Name = MapFeatureDto.Name,
+            DisplayName = MapFeatureDto.DisplayName,
+            Description = MapFeatureDto.Description,
+            GeometryJson = MapFeatureDto.GeometryJson,
+            Size = MapFeatureDto.Size,
+            AdditionalParameters = MapFeatureDto.AdditionalParameters
+        };
+
+        await base.OnInitializedAsync();
+    }
+
+}

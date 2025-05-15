@@ -1,7 +1,7 @@
-using Bozp.Web.Shared.Components.Base;
 using LayerHub.Shared.Dto;
 using LayerHub.Shared.Utils;
 using LayerHub.Web.Application.Services;
+using LayerHub.Web.Components.Custom.Base;
 using Microsoft.AspNetCore.Components;
 using IToastService = Blazored.Toast.Services.IToastService;
 

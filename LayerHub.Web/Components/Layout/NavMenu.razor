@@ -22,17 +22,27 @@
                     <i class="bi bi-house-door-fill me-2 "></i> Home
                 </NavLink>
             </div>
-            
+
             <AuthorizeView>
                 <Authorized>
                     <div class="nav-item">
-                        <NavLink class="nav-link" href="/Manage/Features" Match="NavLinkMatch.All">
-                            <i class="bi bi-pin-map me-2"></i> Features
+                        <NavLink class="nav-link d-flex justify-content-between" href="#" data-bs-toggle="collapse" data-bs-target="#manage" role="button" aria-expanded="true" aria-controls="projects" Match="NavLinkMatch.Prefix">
+                            <span>
+                                <i class="bi bi-pin-map me-2"></i> Manage
+                            </span>
+                            <i class="bi bi-chevron-down float-end"></i>
                         </NavLink>
+            
+                        <div class="nav-group collapse show" id="manage">
+                            <div class="nav nav-pills">
+                                <NavLink class="nav-link" href="/Manage/Features" Match="NavLinkMatch.Prefix">
+                                    Features
+                                </NavLink>
+                            </div>
+                        </div>
                     </div>
                 </Authorized>
             </AuthorizeView>
-
         </nav>
     </div>
 

@@ -1,4 +1,6 @@
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using LayerHub.Api.Application.Extension;
@@ -7,10 +9,12 @@ using LayerHub.Api.Core.Domain.Context;
 using LayerHub.Api.Core.Domain.Mapping;
 using LayerHub.Api.Infrasctructure.Data;
 using LayerHub.Api.Infrasctructure.Initializer;
+using LayerHub.Shared;
 using LayerHub.Shared.Dto;
 using LayerHub.Shared.Models.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
@@ -108,6 +112,29 @@ builder.Services.AddCors(options =>
         });
 });
 
+// Configure JSON serialization options for API responses
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.PropertyNameCaseInsensitive = true;
+    options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+    options.SerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+    options.SerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+    // Enable polymorphic serialization
+    options.SerializerOptions.TypeInfoResolverChain.Insert(0, AppJsonSerializerContext.Default);
+});
+
+// Also configure JSON for all other MVC/API components
+builder.Services.Configure<JsonOptions>(options =>
+{
+    options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+    options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+    options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+    // Enable polymorphic serialization
+    options.JsonSerializerOptions.TypeInfoResolverChain.Insert(0, AppJsonSerializerContext.Default);
+});
+
+
 var app = builder.Build();
 
 app.UseSerilogRequestLogging(options =>
@@ -125,10 +152,6 @@ app.UseSerilogRequestLogging(options =>
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
-    app.UseReDoc(c =>
-    {
-        c.SpecUrl("/openapi/v1.json");
-    });
 
     await InitializeDatabaseAsync(app);
 }

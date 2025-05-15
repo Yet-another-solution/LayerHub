@@ -1,6 +1,7 @@
 using Blazored.Toast;
 using LayerHub.Web.Application.Extension;
 using LayerHub.Web.Components;
+using Microsoft.FluentUI.AspNetCore.Components;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,6 +17,7 @@ builder.Services.AddRazorComponents()
 
 // Register Services
 builder.Services.AddBlazoredToast();
+builder.Services.AddFluentUIComponents();
 builder.Services.AddServicesAndRepositories();
 
 // Set HttpClient

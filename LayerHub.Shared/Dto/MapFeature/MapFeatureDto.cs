@@ -9,7 +9,7 @@ public class MapFeatureDto
     public required string Name { get; set; }
     public string? DisplayName { get; set; }
     public string? Description { get; set; }
-    public IGeometry? Geometry { get; set; }
+    public required JsonDocument GeometryJson { get; set; }
 
     public int? Size { get; set; }
     public JsonDocument? AdditionalParameters { get; set; }

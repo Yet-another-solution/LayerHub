@@ -1,6 +1,6 @@
-namespace Bozp.Web.Shared.Components.Base;
-
 using Microsoft.AspNetCore.Components;
+
+namespace LayerHub.Web.Components.Custom.Base;
 
 public abstract class CustomComponentBase : ComponentBase
 {

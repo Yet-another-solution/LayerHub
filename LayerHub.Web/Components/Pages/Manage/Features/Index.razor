@@ -1,5 +1,6 @@
 @page "/Manage/Features"
 @using LayerHub.Shared.Dto.MapFeature
+@using Microsoft.FluentUI.AspNetCore.Components
 @layout ManageLayout
 
 <PageTitle>Features</PageTitle>
@@ -9,7 +10,9 @@
 
 </div>
 
-<PaginatedListView GetUrl="/Feature" EditUrl="/user" T="MapFeatureDto" CancellationToken="ComponentDetached">
+<PaginatedListView T="MapFeatureDto" CancellationToken="ComponentDetached"
+                   GetUrl="/Feature" 
+                   EditUrl="@("/Manage/Features/{Id}/Edit")" >
     <PropertyColumn TProp="string" TGridItem="MapFeatureDto" Property="@(e => e.Name)"/>
     <PropertyColumn TProp="string" TGridItem="MapFeatureDto" Property="@(e => e.DisplayName ?? "")"/>
     <PropertyColumn TProp="string" TGridItem="MapFeatureDto" Property="@(e => e.Description ?? "")"/>
