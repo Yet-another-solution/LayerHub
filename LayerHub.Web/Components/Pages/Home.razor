@@ -4,6 +4,7 @@
 @using Community.Blazor.MapLibre.Models.Control
 @using Community.Blazor.MapLibre.Models.Feature
 @using Community.Blazor.MapLibre.Models.Layers
+@using Community.Blazor.MapLibre.Models.Marker
 @using Community.Blazor.MapLibre.Models.Sources
 @using LayerHub.Shared.Dto
 @using LayerHub.Shared.Dto.MapFeature
@@ -64,6 +65,12 @@
                 FillColor = "#088",
                 FillOpacity = 0.8
             }
+        });
+
+        await Map.AddMarker(new MarkerOptions(), new LngLat()
+        {
+            Latitude = 48.725837,
+            Longitude = 18.752835
         });
     }
 }

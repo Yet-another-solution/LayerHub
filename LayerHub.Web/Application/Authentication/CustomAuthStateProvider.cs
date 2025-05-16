@@ -1,5 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using Blazored.LocalStorage;
 using LayerHub.Shared.Dto;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
@@ -8,9 +9,9 @@ namespace LayerHub.Web.Application.Authentication;
 
 public class CustomAuthStateProvider : AuthenticationStateProvider
 {
-    private readonly ProtectedLocalStorage _localStorage;
+    private readonly ILocalStorageService _localStorage;
 
-    public CustomAuthStateProvider(ProtectedLocalStorage localStorage)
+    public CustomAuthStateProvider(ILocalStorageService localStorage)
     {
         _localStorage = localStorage;
     }
@@ -19,14 +20,14 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
     {
         try
         {
-            var sessionData = await _localStorage.GetAsync<AuthResponse>("authData");
+            var sessionData = await _localStorage.GetItemAsync<AuthResponse>("user");
 
-            if (!sessionData.Success || sessionData.Value == null)
+            if (sessionData is null)
             {
                 return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
             }
 
-            var identity = GetClaimsIdentity(sessionData.Value);
+            var identity = GetClaimsIdentity(sessionData);
             var user = new ClaimsPrincipal(identity);
             return new AuthenticationState(user);
         }
@@ -39,7 +40,7 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
 
     public async Task MarkUserAsAuthenticated(AuthResponse authResponse)
     {
-        await _localStorage.SetAsync("authData", authResponse);
+        await _localStorage.SetItemAsync("user", authResponse);
         var identity = GetClaimsIdentity(authResponse);
         var user = new ClaimsPrincipal(identity);
         NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(user)));
@@ -67,7 +68,7 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
 
     public async Task MarkUserAsLoggedOut()
     {
-        await _localStorage.DeleteAsync("authData");
+        await _localStorage.RemoveItemAsync("user");
         var identity = new ClaimsIdentity();
         var user = new ClaimsPrincipal(identity);
         NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(user)));
@@ -78,8 +79,8 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
     {
         try
         {
-            var sessionData = await _localStorage.GetAsync<AuthResponse>("authData");
-            return sessionData.Success ? sessionData.Value : null;
+            var sessionData = await _localStorage.GetItemAsync<AuthResponse>("user");
+            return sessionData;
         }
         catch
         {
