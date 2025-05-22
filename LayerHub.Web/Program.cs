@@ -21,11 +21,14 @@ builder.Services.AddFluentUIComponents();
 builder.Services.AddServicesAndRepositories();
 
 // Set HttpClient
-var globalConfig = builder.Configuration.GetSection("Global");
-builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(globalConfig.GetValue<string>("ApiUrl") ?? throw new NullReferenceException("ApiUrl cannot be null")) });
+builder.Services.AddHttpClient("API", client =>
+    {
+        client.BaseAddress = new Uri("https://api/");
+    });
 
 
 var app = builder.Build();
+
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

@@ -19,6 +19,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
     public virtual DbSet<Tenant> Tenants { get; set; } = default!;
     // Models
     public virtual DbSet<MapFeature> MapFeatures { get; set; } = default!;
+    public virtual DbSet<MapFeatureLayer> MapFeatureLayers { get; set; } = default!;
+    public virtual DbSet<MapLayer> MapLayers { get; set; } = default!;
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -47,6 +49,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
     protected override void OnModelCreating(ModelBuilder builder)
     {
         builder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
+
+        builder.Entity<MapFeatureLayer>()
+            .HasKey(mfl => new { mfl.MapFeatureId, mfl.MapLayerId });
 
         // Query filters
         builder.Model.GetEntityTypes()

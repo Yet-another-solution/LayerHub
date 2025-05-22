@@ -19,10 +19,10 @@ public class AuthenticationService : IAuthenticationService
     private readonly CustomAuthStateProvider _authStateProvider;
         
     public AuthenticationService(
-        HttpClient httpClient, 
+        IHttpClientFactory httpClientFactory, 
         AuthenticationStateProvider authStateProvider)
     {
-        _httpClient = httpClient;
+        _httpClient = httpClientFactory.CreateClient("API");
         _authStateProvider = (CustomAuthStateProvider)authStateProvider;
     }
         

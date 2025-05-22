@@ -31,12 +31,12 @@ public class HttpService : IHttpService
     private IToastService _toastService;
 
     public HttpService(
-        HttpClient httpClient,
+        IHttpClientFactory httpClientFactory,
         NavigationManager navigationManager,
         ILocalStorageService localStorageService,
         IConfiguration configuration, IToastService toastService)
     {
-        _httpClient = httpClient;
+        _httpClient = httpClientFactory.CreateClient("API");
         _navigationManager = navigationManager;
         _localStorageService = localStorageService;
         _configuration = configuration;
