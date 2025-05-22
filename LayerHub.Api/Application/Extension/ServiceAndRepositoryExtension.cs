@@ -15,6 +15,7 @@ public static class ServicesAndRepositoryExtension
 
         services.AddScoped<ITenantRepository, TenantRepository>();
         services.AddScoped<IMapFeatureRepository, MapFeatureRepository>();
+        services.AddScoped<IMapLayerRepository, MapLayerRepository>();
 
         #endregion
         #region Service
@@ -22,6 +23,7 @@ public static class ServicesAndRepositoryExtension
         services.AddScoped<IJwtService, JwtService>();
         services.AddScoped<ITenantService, TenantService>();
         services.AddScoped<IMapFeatureService, MapFeatureService>();
+        services.AddScoped<IMapLayerService, MapLayerService>();
 
         #endregion
 

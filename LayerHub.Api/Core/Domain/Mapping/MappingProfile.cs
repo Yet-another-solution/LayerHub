@@ -1,5 +1,6 @@
 using AutoMapper;
 using LayerHub.Shared.Dto.MapFeature;
+using LayerHub.Shared.Dto.MapLayer;
 using LayerHub.Shared.Dto.Tenant;
 using LayerHub.Shared.Dto.User;
 using LayerHub.Shared.Models;
@@ -31,5 +32,13 @@ public class MappingProfile : Profile
         CreateMap<PaginatedList<MapFeature>, PaginatedList<MapFeatureDto>>()
             .ConvertUsing<PagedListConverter<MapFeature, MapFeatureDto>>();
 
+        // MapLayer
+        CreateMap<MapLayer, MapLayerDto>()
+            .ForMember(dest => dest.MapFeatures, opt => 
+                opt.MapFrom(src => src.MapFeatureLayers.Select(mfl => mfl.MapFeature).ToList()));
+        CreateMap<NewMapLayerDto, MapLayer>();
+        CreateMap<UpdateMapLayerDto, MapLayer>();
+        CreateMap<PaginatedList<MapLayer>, PaginatedList<MapLayerDto>>()
+            .ConvertUsing<PagedListConverter<MapLayer, MapLayerDto>>();
     }
 }
