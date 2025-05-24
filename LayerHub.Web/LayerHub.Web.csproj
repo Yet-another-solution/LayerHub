@@ -5,6 +5,8 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <ContainerImageTag>0.1.0</ContainerImageTag>
+        <ContainerRepository>ghcr.io/MatejMa2ur/LayerHub-Web</ContainerRepository>
     </PropertyGroup>
 
     <ItemGroup>
