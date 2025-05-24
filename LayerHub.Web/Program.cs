@@ -21,10 +21,13 @@ builder.Services.AddFluentUIComponents();
 builder.Services.AddServicesAndRepositories();
 
 // Set HttpClient
-builder.Services.AddHttpClient("API", client =>
-    {
-        client.BaseAddress = new Uri("https://api/");
-    });
+builder.Services.AddHttpClient("API", (serviceProvider, client) =>
+{
+    var configuration = serviceProvider.GetRequiredService<IConfiguration>();
+    var apiUrl = configuration["services:Api:http:0"] ?? "http://Api:5000/";
+    client.BaseAddress = new Uri(apiUrl);
+});
+
 
 
 var app = builder.Build();
