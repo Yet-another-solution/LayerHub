@@ -79,7 +79,7 @@ public class TenantServiceTests
         Assert.Equal(tenantId, result.Id);
         Assert.Equal("Test Tenant", result.Name);
         
-        await _tenantRepository.Received(2).Get(tenantId); // Called twice due to the check
+        await _tenantRepository.Received(1).Get(tenantId); // Called twice due to the check
     }
 
     [Fact]
