@@ -1,5 +1,4 @@
 ﻿@page "/"
-@using System.Drawing
 @using System.Text.Json
 @using Community.Blazor.MapLibre.Models
 @using Community.Blazor.MapLibre.Models.Camera
@@ -19,7 +18,7 @@
 <PageTitle>Home</PageTitle>
 
 
-<MapLibre @ref="Map" Options="_mapOptions" Class="rounded-top"
+<MapLibre @ref="Map" Options="_mapOptions" Class="rounded-top bg-dark"
           Height="100vh" @rendermode="InteractiveServer" OnLoad="OnMapLoad"/>
 
 @code
