@@ -42,12 +42,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Content Include="..\.dockerignore">
-            <Link>.dockerignore</Link>
-        </Content>
-    </ItemGroup>
-
-    <ItemGroup>
         <ProjectReference Include="..\LayerHub.Shared\LayerHub.Shared.csproj" />
         <ProjectReference Include="..\ServiceDefaults\ServiceDefaults.csproj" />
     </ItemGroup>
@@ -55,6 +49,12 @@
     <ItemGroup>
       <None Include="wwwroot\Polygon.csv" />
       <None Include="wwwroot\Polygon.xlsx" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="..\.dockerignore">
+        <Link>.dockerignore</Link>
+      </Content>
     </ItemGroup>
 
 </Project>

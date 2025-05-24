@@ -8,14 +8,17 @@ FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["LayerHub.Api/LayerHub.Api.csproj", "LayerHub.Api/"]
+COPY ["LayerHub.Shared/LayerHub.Shared.csproj", "LayerHub.Shared/"]
+COPY ["Libraries/Community.Blazor.MapLibre/Community.Blazor.MapLibre/Community.Blazor.MapLibre.csproj", "Libraries/Community.Blazor.MapLibre/Community.Blazor.MapLibre/"]
+COPY ["ServiceDefaults/ServiceDefaults.csproj", "ServiceDefaults/"]
 RUN dotnet restore "LayerHub.Api/LayerHub.Api.csproj"
 COPY . .
 WORKDIR "/src/LayerHub.Api"
-RUN dotnet build "LayerHub.Api.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN dotnet build "./LayerHub.Api.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "LayerHub.Api.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./LayerHub.Api.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app

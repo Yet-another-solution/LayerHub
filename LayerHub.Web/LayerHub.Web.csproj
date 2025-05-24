@@ -25,15 +25,15 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Content Include="..\.dockerignore">
-        <Link>.dockerignore</Link>
-      </Content>
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\LayerHub.Shared\LayerHub.Shared.csproj" />
       <ProjectReference Include="..\Libraries\Community.Blazor.MapLibre\Community.Blazor.MapLibre\Community.Blazor.MapLibre.csproj" />
       <ProjectReference Include="..\ServiceDefaults\ServiceDefaults.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="..\.dockerignore">
+        <Link>.dockerignore</Link>
+      </Content>
     </ItemGroup>
 
 </Project>
