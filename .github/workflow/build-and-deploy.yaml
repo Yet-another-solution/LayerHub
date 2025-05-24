@@ -1,0 +1,68 @@
+name: LayerHub - build and test
+
+on:
+  push:
+    branches: [ main, development ]
+  pull_request:
+    branches: [ development ]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3.2.0
+        with:
+          dotnet-version: 8.0
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --no-restore --configuration Release
+
+      - name: Test
+        run: dotnet test
+
+  Deploy:
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v1
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - id: lower-repo
+        shell: pwsh
+        run: |
+          "::set-output name=repository::$($env:GITHUB_REPOSITORY.ToLowerInvariant())"
+      - name: Build and Push Docker Image for API
+        uses: docker/build-push-action@v2
+        with:
+          context: ./LayerHub.Api
+          push: true
+          tags: |
+            ghcr.io/${{ steps.lower-repo.outputs.repository }}-api:latest
+      - name: Build and Push Docker Image for Web
+        uses: docker/build-push-action@v2
+        with:
+          context: ./LayerHub.Web
+          push: true
+          tags: |
+            ghcr.io/${{ steps.lower-repo.outputs.repository }}-web:latest
+            
+  
