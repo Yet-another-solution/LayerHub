@@ -59,3 +59,4 @@ nunit-*.xml
 .idea/
 /LayerHub.sln.DotSettings
 /LayerHub.sln.DotSettings.user
+/AppHost/docker-compose-artifacts/.env
