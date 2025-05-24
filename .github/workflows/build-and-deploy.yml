@@ -51,25 +51,15 @@ jobs:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - id: lower-repo
-        shell: pwsh
+
+      - name: Build and Push API Container
         run: |
-          "::set-output name=repository::$($env:GITHUB_REPOSITORY.ToLowerInvariant())"
-      - name: Build and Push Docker Image for API
-        uses: docker/build-push-action@v2
-        with:
-          file: ./LayerHub.Api/Dockerfile
-          context: .
-          push: true
-          tags: |
-            ghcr.io/${{ steps.lower-repo.outputs.repository }}-api:latest
-      - name: Build and Push Docker Image for Web
-        uses: docker/build-push-action@v2
-        with:
-          file: ./LayerHub.Web/Dockerfile
-          context: .
-          push: true
-          tags: |
-            ghcr.io/${{ steps.lower-repo.outputs.repository }}-web:latest
-            
-  
+          dotnet publish ./LayerHub.Api/LayerHub.Api.csproj -c Release --os linux --arch x64 /t:PublishContainer 
+            -p ContainerRegistry=ghcr.io
+
+      - name: Build and Push Web Container
+        run: |
+          dotnet publish ./LayerHub.Web/LayerHub.Web.csproj -c Release --os linux --arch x64 /t:PublishContainer 
+            -p ContainerRegistry=ghcr.io
+
+
