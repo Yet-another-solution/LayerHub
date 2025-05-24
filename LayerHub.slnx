@@ -1,0 +1,18 @@
+﻿<Solution>
+  <Folder Name="/Libraries/">
+    <Project Path="Libraries\Community.Blazor.MapLibre\Community.Blazor.MapLibre\Community.Blazor.MapLibre.csproj" Type="Classic C#" />
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path="compose.yaml" />
+    <File Path="README.md" />
+    <File Path=".gitignore" />
+  </Folder>
+  <Folder Name="/Tests/">
+    <Project Path="LayerHub.Api.Tests\LayerHub.Api.Tests.csproj" Type="Classic C#" />
+  </Folder>
+  <Project Path="AppHost\AppHost.csproj" Type="Classic C#" />
+  <Project Path="LayerHub.Api\LayerHub.Api.csproj" Type="Classic C#" />
+  <Project Path="LayerHub.Shared\LayerHub.Shared.csproj" Type="Classic C#" />
+  <Project Path="LayerHub.Web\LayerHub.Web.csproj" Type="Classic C#" />
+  <Project Path="ServiceDefaults\ServiceDefaults.csproj" Type="Classic C#" />
+</Solution>

@@ -29,4 +29,6 @@ builder.AddProject<LayerHub_Web>("Web")
     .WithExternalHttpEndpoints()
     .WithReference(api);
 
+builder.AddDockerComposeEnvironment("compose");
+
 builder.Build().Run();
