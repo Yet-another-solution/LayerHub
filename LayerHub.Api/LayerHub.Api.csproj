@@ -6,7 +6,8 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
         <ContainerImageTags>0.1.0;latest</ContainerImageTags>
-        <ContainerRepository>ghcr.io/MatejMa2ur/LayerHub-Api</ContainerRepository>
+        <ContainerRegistry>ghcr.io</ContainerRegistry>
+        <ContainerRepository>MatejMa2ur/LayerHub-Web</ContainerRepository>
 
         <ContainerRuntimeIdentifiers>linux-x64;linux-arm64</ContainerRuntimeIdentifiers>
     </PropertyGroup>
