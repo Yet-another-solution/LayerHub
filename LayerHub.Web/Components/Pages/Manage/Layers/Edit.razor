@@ -1,0 +1,13 @@
+@page "/Manage/Layers/{Id:guid}/Edit"
+
+@using LayerHub.Web.Application.Services
+
+@layout ManageLayout
+
+<h3>Edit</h3>
+
+@code
+{
+    [Parameter] 
+    public Guid Id { get; set; }
+}

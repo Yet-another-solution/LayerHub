@@ -99,48 +99,16 @@
         {
             try
             {
-                // Calculate bounds from all features
-                double minLng = double.MaxValue;
-                double maxLng = double.MinValue;
-                double minLat = double.MaxValue;
-                double maxLat = double.MinValue;
+                var bounds = new LngLatBounds
+                {
+                    Southwest = mapFeatures.First().GetBounds().Southwest,
+                    Northeast = mapFeatures.First().GetBounds().Northeast,
+                };
 
                 foreach (var feature in mapFeatures)
                 {
-                    // Handle different geometry types
-                    if (feature.Geometry is PointGeometry point)
-                    {
-                        var coordinates = point.Coordinates;
-                        UpdateBounds(coordinates[0], coordinates[1]);
-                    }
-                    else if (feature.Geometry is PolygonGeometry polygon)
-                    {
-                        foreach (var ring in polygon.Coordinates)
-                        {
-                            foreach (var coord in ring)
-                            {
-                                UpdateBounds(coord[0], coord[1]);
-                            }
-                        }
-                    }
-                    // Add more geometry types if needed
+                    bounds.Extend(feature.GetBounds());
                 }
-
-                // Local function to update bounds
-                void UpdateBounds(double lng, double lat)
-                {
-                    minLng = Math.Min(minLng, lng);
-                    maxLng = Math.Max(maxLng, lng);
-                    minLat = Math.Min(minLat, lat);
-                    maxLat = Math.Max(maxLat, lat);
-                }
-
-                // Create bounds object and fit map to bounds with padding
-                var bounds = new LngLatBounds
-                {
-                    Southwest = new LngLat { Longitude = minLng, Latitude = minLat },
-                    Northeast = new LngLat { Longitude = maxLng, Latitude = maxLat }
-                };
 
                 // Apply FitBounds with padding to ensure all features are visible
                 await Map.FitBounds(bounds, new FitBoundOptions 

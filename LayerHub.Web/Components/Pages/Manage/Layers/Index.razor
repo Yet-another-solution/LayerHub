@@ -12,7 +12,8 @@
 
 <PaginatedListView T="MapLayerDto" CancellationToken="ComponentDetached"
                    GetUrl="/Layer" 
-                   EditUrl="@("/Manage/Features/{Id}/Edit")" >
+                   CreateUrl="/Manage/Layers/Create"
+                   EditUrl="@("/Manage/Layers/{Id}/Edit")" >
     <PropertyColumn TProp="string" TGridItem="MapLayerDto" Property="@(e => e.Name)"/>
     <PropertyColumn TProp="string" TGridItem="MapLayerDto" Property="@(e => e.Description ?? "")"/>
     <TemplateColumn TGridItem="MapLayerDto">
