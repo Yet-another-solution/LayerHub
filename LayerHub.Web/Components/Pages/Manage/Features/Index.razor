@@ -12,6 +12,7 @@
 
 <PaginatedListView T="MapFeatureDto" CancellationToken="ComponentDetached"
                    GetUrl="/Feature" 
+                   CreateUrl="/Manage/Features/Create"
                    EditUrl="@("/Manage/Features/{Id}/Edit")" >
     <PropertyColumn TProp="string" TGridItem="MapFeatureDto" Property="@(e => e.Name)"/>
     <PropertyColumn TProp="string" TGridItem="MapFeatureDto" Property="@(e => e.DisplayName ?? "")"/>

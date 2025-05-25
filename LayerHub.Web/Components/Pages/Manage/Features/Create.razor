@@ -1,4 +1,4 @@
-@page "/Manage/Features/{id:guid}/Edit"
+@page "/Manage/Features/Create"
 @using System.Text.Json
 @using Community.Blazor.MapLibre.Models
 @using Community.Blazor.MapLibre.Models.Camera
@@ -16,32 +16,28 @@
 
 <div class="d-flex gap-3 flex-sm-row flex-column">
     <CustomCard Class="col-sm-4">
-        @if (MapFeatureDto is not null)
-        {
-            <CustomEditForm T="MapFeatureDto" 
-                            Object="UpdateMapFeatureDto"
-                            PutUrl=@($"/Feature/{Id}")>
-                <div class="form-floating mb-3">
-                    <input type="text" class="form-control" id="nameInput" @bind="UpdateMapFeatureDto.Name">
-                    <label for="nameInput">Name:</label>
-                </div>
-                <div class="form-floating mb-3">
-                    <input type="text" class="form-control" id="displayNameInput" @bind="UpdateMapFeatureDto.DisplayName" />
-                    <label for="displayNameInput">Display name:</label>
-                </div>
-                <div class="form-floating mb-3">
-                    <textarea class="form-control" id="descriptionInput" @bind="UpdateMapFeatureDto.Description" style="height: 90px"></textarea>
-                    <label for="descriptionInput">Description</label>
-                </div>
-                <div class="form-floating mb-3">
-                    <textarea class="form-control" id="jsonInput" style="height: 90px" @oninput="OnJsonInput">
-                    @JsonSerializer.Serialize(UpdateMapFeatureDto.GeometryJson)
+        <CustomCreateForm T="MapFeatureDto" 
+                        Object="NewMapFeatureDto"
+                        PostUrl=@($"/Feature/")>
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="nameInput" @bind="NewMapFeatureDto.Name">
+                <label for="nameInput">Name:</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="displayNameInput" @bind="NewMapFeatureDto.DisplayName" />
+                <label for="displayNameInput">Display name:</label>
+            </div>
+            <div class="form-floating mb-3">
+                <textarea class="form-control" id="descriptionInput" @bind="NewMapFeatureDto.Description" style="height: 90px"></textarea>
+                <label for="descriptionInput">Description</label>
+            </div>
+            <div class="form-floating mb-3">
+                <textarea class="form-control" id="jsonInput" style="height: 90px" @oninput="OnJsonInput">
+                    @JsonSerializer.Serialize(NewMapFeatureDto.GeometryJson)
                 </textarea>
-                    <label for="jsonInput">Json</label>
-                </div>
-            </CustomEditForm>
-            
-        }
+                <label for="jsonInput">Json</label>
+            </div>
+        </CustomCreateForm>
     </CustomCard>
     
     <MapLibre @ref="Map" Options="_mapOptions" Class="rounded"
@@ -75,24 +71,11 @@
     [Parameter] 
     public Guid Id { get; set; }
 
-    public MapFeatureDto MapFeatureDto { get; set; }
-    public UpdateMapFeatureDto UpdateMapFeatureDto { get; set; }
-
-    protected override async Task OnInitializedAsync()
+    public NewMapFeatureDto NewMapFeatureDto { get; set; } = new()
     {
-        MapFeatureDto = await HttpService.Get<MapFeatureDto>($"Feature/{Id}");
-        UpdateMapFeatureDto = new UpdateMapFeatureDto
-        {
-            Name = MapFeatureDto.Name,
-            DisplayName = MapFeatureDto.DisplayName,
-            Description = MapFeatureDto.Description,
-            GeometryJson = MapFeatureDto.GeometryJson,
-            Size = MapFeatureDto.Size,
-            AdditionalParameters = MapFeatureDto.AdditionalParameters
-        };
-
-        await base.OnInitializedAsync();
-    }
+        Name = ""
+    };
+    
     private async Task LoadGeoJson()
     {
         try
@@ -107,7 +90,7 @@
 
         var polygon = new FeatureFeature()
         {
-            Geometry = JsonSerializer.Deserialize<IGeometry>(UpdateMapFeatureDto.GeometryJson)
+            Geometry = JsonSerializer.Deserialize<IGeometry>(NewMapFeatureDto.GeometryJson)
         };
 
         await Map.AddSource("maine", new GeoJsonSource()
@@ -152,7 +135,7 @@
         try
         {
                     
-            UpdateMapFeatureDto.GeometryJson = JsonDocument.Parse(e.Value?.ToString() ?? "{}");
+            NewMapFeatureDto.GeometryJson = JsonDocument.Parse(e.Value?.ToString() ?? "{}");
             if (e.Value is not null)
             {
                 await LoadGeoJson();
