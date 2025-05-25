@@ -10,6 +10,4 @@ public class NewMapLayerDto
     public string? Description { get; set; }
     public JsonDocument? Layer { get; set; }
     public List<Guid> MapFeatureIds { get; set; } = new();
-    public DateTimeOffset CreatedAt { get; set; }
-    public DateTimeOffset UpdatedAt { get; set; }
 }

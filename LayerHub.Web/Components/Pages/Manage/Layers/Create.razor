@@ -7,6 +7,7 @@
 @using Community.Blazor.MapLibre.Models.Sources
 @using LayerHub.Shared.Dto.MapFeature
 @using LayerHub.Shared.Dto.MapLayer
+@using LayerHub.Shared.Utils
 @using LayerHub.Web.Application.Services
 
 @layout ManageLayout
@@ -16,43 +17,55 @@
 <h3>Edit</h3>
 
 <div class="d-flex gap-3 flex-sm-row flex-column">
-    <CustomCard Class="col-sm-4">
-        <CustomCreateForm T="MapLayerDto" 
-                          Object="NewMapLayerDto"
-                          PostUrl=@($"/Feature/")>
-            <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="nameInput" @bind="NewMapLayerDto.Name">
-                <label for="nameInput">Name:</label>
-            </div>
-            <div class="form-floating mb-3">
-                <textarea class="form-control" id="descriptionInput" @bind="NewMapLayerDto.Description" style="height: 90px"></textarea>
-                <label for="descriptionInput">Description</label>
-            </div>
-            
-            <PaginatedSelect TItem="MapFeatureDto"
-                             Class="mb-3"
-                             IsPaginated="true"
-                             IsMultiSelect="true"
-                             ApiUrl="/Feature"
-                             SelectedOptionsChanged="HandleFeaturesSelected"
-                             DefaultText="Choose features...">
-                <SelectedOptionsRenderer Context="items">
-                    @foreach (var item in items)
-                    {
-                        <span class="badge bg-light text-dark me-1">
-                            @item.Name
-                        </span>
-                    }
-                </SelectedOptionsRenderer>
-                <Option Context="item">
-                    @item.Name
-                </Option>
-            </PaginatedSelect>
-        </CustomCreateForm>
-    </CustomCard>
-    
+    <div class="col-sm-4">
+        <CustomCard>
+            <CustomCreateForm T="MapLayerDto"
+                              Object="NewMapLayerDto"
+                              PostUrl=@("/Layer/")>
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="nameInput" @bind="NewMapLayerDto.Name">
+                    <label for="nameInput">Name:</label>
+                </div>
+                <div class="form-floating mb-3">
+                <textarea class="form-control" id="descriptionInput" @bind="NewMapLayerDto.Description"
+                          style="height: 90px"></textarea>
+                    <label for="descriptionInput">Description</label>
+                </div>
+
+                <PaginatedSelect TItem="MapFeatureDto"
+                                 Class="mb-3"
+                                 IsPaginated="true"
+                                 IsMultiSelect="true"
+                                 ApiUrl="/Feature"
+                                 SelectedOptionsChanged="HandleFeaturesSelected"
+                                 DefaultText="Choose features...">
+                    <SelectedOptionsRenderer Context="items">
+                        @if (items.Count > 0)
+                        {
+                            <div class="d-flex flex-row flex-nowrap overflow-hidden">
+                                @foreach (var item in items.Take(3))
+                                {
+                                    <span class="badge bg-light text-dark me-1 text-truncate">
+                                    @item.Name
+                                </span>
+                                }
+                                @if (items.Count > 3)
+                                {
+                                    <span class="badge bg-secondary text-white">+@(items.Count - 3)</span>
+                                }
+                            </div>
+                        }
+                    </SelectedOptionsRenderer>
+                    <Option Context="item">
+                        @item.Name
+                    </Option>
+                </PaginatedSelect>
+            </CustomCreateForm>
+        </CustomCard>
+    </div>
+
     <MapLibre @ref="Map" Options="_mapOptions" Class="rounded"
-              Height="30vh" @rendermode="InteractiveServer" OnLoad="OnMapLoad"/>
+              Height="50vh" @rendermode="InteractiveServer" OnLoad="OnMapLoad"/>
 </div>
 
 
@@ -60,14 +73,14 @@
 @code
 {
     private MapLibre Map { get; set; } = new MapLibre();
-    
+
     private readonly MapOptions _mapOptions = new()
     {
         Container = "UniqueMapId",
         Style = "https://tiles.openfreemap.org/styles/liberty",
         Center = new LngLat()
         {
-            Latitude = 48.725837, 
+            Latitude = 48.725837,
             Longitude = 18.752835
         },
         Zoom = 14, // Start with a default zoom level
@@ -86,14 +99,25 @@
         }
     }
 
-    [Parameter] 
-    public Guid Id { get; set; }
+    [Parameter] public Guid Id { get; set; }
 
     public NewMapLayerDto NewMapLayerDto { get; set; } = new()
     {
-        Name = ""
+        Name = "",
+        Layer =
+            new FillLayer()
+            {
+                Id = "GeoJsonLayerId",
+                Source = "maine",
+                Paint = new FillLayerPaint()
+                {
+                    FillColor = "#088",
+                    FillOpacity = 0.8,
+                    FillOutlineColor = "#008888"
+                }
+            }.ToJsonDocument()
     };
-    
+
     private async Task LoadGeoJson()
     {
         try
@@ -153,10 +177,12 @@
     }
 
     public List<MapFeatureDto> MapFeatureDtos { get; set; } = new();
-    
+
     private async Task HandleFeaturesSelected(List<MapFeatureDto> items)
     {
         MapFeatureDtos = items;
+        NewMapLayerDto.MapFeatureIds = items.Select(i => i.Id).ToList();
+
         try
         {
             await LoadGeoJson();

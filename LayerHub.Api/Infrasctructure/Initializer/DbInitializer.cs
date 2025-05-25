@@ -104,7 +104,7 @@ public class DbInitializer
     private async Task SeedMapFeaturesAsync(string csvFilePath)
     {
         // Skip if features already exist
-        if (await _context.MapFeatures.AnyAsync())
+        if (await _context.MapFeatures.IgnoreQueryFilters().AnyAsync())
         {
             _logger.LogInformation("MapFeatures already exist in the database. Skipping import.");
             return;

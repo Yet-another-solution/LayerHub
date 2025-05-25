@@ -1,13 +1,205 @@
 @page "/Manage/Layers/{Id:guid}/Edit"
-
+@using System.Text.Json
+@using Community.Blazor.MapLibre.Models
+@using Community.Blazor.MapLibre.Models.Camera
+@using Community.Blazor.MapLibre.Models.Feature
+@using Community.Blazor.MapLibre.Models.Layers
+@using Community.Blazor.MapLibre.Models.Sources
+@using LayerHub.Shared.Dto.MapFeature
+@using LayerHub.Shared.Dto.MapLayer
 @using LayerHub.Web.Application.Services
 
 @layout ManageLayout
 
+@inject IHttpService HttpService
+
 <h3>Edit</h3>
+
+<div class="d-flex gap-3 flex-sm-row flex-column">
+    <div class="col-sm-4">
+        <CustomCard>
+            @if (MapLayerDto is not null)
+            {
+                <CustomEditForm T="MapLayerDto" 
+                               Object="UpdateMapLayerDto"
+                               PutUrl=@($"/Layer/{Id}")>
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="nameInput" @bind="UpdateMapLayerDto.Name">
+                        <label for="nameInput">Name:</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <textarea class="form-control" id="descriptionInput" @bind="UpdateMapLayerDto.Description" style="height: 90px"></textarea>
+                        <label for="descriptionInput">Description</label>
+                    </div>
+                    
+                    <PaginatedSelect TItem="MapFeatureDto"
+                                    Class="mb-3"
+                                    IsPaginated="true"
+                                    IsMultiSelect="true"
+                                    ApiUrl="/Feature"
+                                    SelectedOptions="MapFeatureDtos"
+                                    SelectedOptionsChanged="HandleFeaturesSelected"
+                                    DefaultText="Choose features...">
+                        <SelectedOptionsRenderer Context="items">
+                            @if (items.Count > 0)
+                            {
+                                <div class="d-flex flex-row flex-nowrap overflow-hidden">
+                                    @foreach (var item in items.Take(3))
+                                    {
+                                        <span class="badge bg-light text-dark me-1 text-truncate">
+                                            @item.Name
+                                        </span>
+                                    }
+                                    @if (items.Count > 3)
+                                    {
+                                        <span class="badge bg-secondary text-white">+@(items.Count - 3)</span>
+                                    }
+                                </div>
+                            }
+                        </SelectedOptionsRenderer>
+                        <Option Context="item">
+                            @item.Name
+                        </Option>
+                    </PaginatedSelect>
+                </CustomEditForm>
+            }
+        </CustomCard>
+    </div>
+    
+    <MapLibre @ref="Map" Options="_mapOptions" Class="rounded"
+              Height="50vh" @rendermode="InteractiveServer" OnLoad="OnMapLoad"/>
+</div>
 
 @code
 {
+    private MapLibre Map { get; set; } = new MapLibre();
+
+    private readonly MapOptions _mapOptions = new()
+    {
+        Container = "UniqueMapId",
+        Style = "https://tiles.openfreemap.org/styles/liberty",
+        Center = new LngLat()
+        {
+            Latitude = 48.725837,
+            Longitude = 18.752835
+        },
+        Zoom = 14, // Start with a default zoom level
+        Pitch = 20
+    };
+
+    private async Task OnMapLoad(EventArgs obj)
+    {
+        try
+        {
+            await LoadGeoJson();
+        }
+        catch (Exception)
+        {
+            // ignored
+        }
+    }
+
     [Parameter] 
     public Guid Id { get; set; }
+
+    public MapLayerDto MapLayerDto { get; set; } = new() { Name = "" };
+    public UpdateMapLayerDto UpdateMapLayerDto { get; set; } = new() { Name = "" };
+    public List<MapFeatureDto> MapFeatureDtos { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        MapLayerDto = await HttpService.Get<MapLayerDto>($"Layer/{Id}");
+
+        MapFeatureDtos = MapLayerDto.MapFeatures;
+        
+        UpdateMapLayerDto = new UpdateMapLayerDto
+        {
+            Name = MapLayerDto.Name,
+            Description = MapLayerDto.Description,
+            Layer = MapLayerDto.Layer,
+            MapFeatureIds = MapLayerDto.MapFeatures.Select(f => f.Id).ToList()
+        };
+
+        await base.OnInitializedAsync();
+    }
+    
+    private async Task LoadGeoJson()
+    {
+        if (!MapFeatureDtos.Any())
+            return;
+            
+        try
+        {
+            await Map.RemoveLayer("GeoJsonLayerId");
+            await Map.RemoveSource("maine");
+        }
+        catch (Exception)
+        {
+            // ignored
+        }
+
+        await Map.AddSource("maine", new GeoJsonSource()
+        {
+            Data = new FeatureCollection()
+            {
+                Features = new List<IFeature>(MapFeatureDtos.Select(mf => new FeatureFeature()
+                {
+                    Geometry = JsonSerializer.Deserialize<IGeometry>(mf.GeometryJson)
+                }))
+            }
+        });
+
+        await Map.AddLayer(new FillLayer()
+        {
+            Id = "GeoJsonLayerId",
+            Source = "maine",
+            Paint = new FillLayerPaint()
+            {
+                FillColor = "#088",
+                FillOpacity = 0.8,
+                FillOutlineColor = "#008888"
+            }
+        });
+
+        if (MapFeatureDtos.Any())
+        {
+            // Get the coordinates from the polygon
+            var bounds = new LngLatBounds
+            {
+                Southwest = JsonSerializer.Deserialize<IGeometry>(MapFeatureDtos.First().GeometryJson).GetBounds().Southwest,
+                Northeast = JsonSerializer.Deserialize<IGeometry>(MapFeatureDtos.First().GeometryJson).GetBounds().Northeast,
+            };
+            
+            foreach (var feature in MapFeatureDtos)
+            {
+                var geometry = JsonSerializer.Deserialize<IGeometry>(feature.GeometryJson);
+                bounds.Extend(geometry.GetBounds());
+            }
+
+            // Options for fit bounds
+            var fitBoundsOptions = new FitBoundOptions
+            {
+                Padding = 50, // Add padding around the bounds (in pixels)
+                MaxZoom = 19 // Optional: limit max zoom level
+            };
+
+            // Fit the map to the bounds
+            await Map.FitBounds(bounds, fitBoundsOptions);
+        }
+    }
+
+    private async Task HandleFeaturesSelected(List<MapFeatureDto> items)
+    {
+        MapFeatureDtos = items;
+        UpdateMapLayerDto.MapFeatureIds = items.Select(i => i.Id).ToList();
+
+        try
+        {
+            await LoadGeoJson();
+        }
+        catch (Exception)
+        {
+            // ignored
+        }
+    }
 }

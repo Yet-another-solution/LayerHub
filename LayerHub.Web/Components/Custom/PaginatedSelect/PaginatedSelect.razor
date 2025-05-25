@@ -7,28 +7,32 @@
 @typeparam TItem
 
 <div class="btn-group w-100 simple-dropdown @(Class ?? "")" style="@(Style ?? "")">
-    <button class="btn dropdown-toggle w-100 text-truncate text-start d-flex flex-row align-items-center" type="button" id="dropdownMenuButton" 
-            style="border-color: var(--bs-border-color);" data-bs-toggle="dropdown" 
+    <button class="btn dropdown-toggle w-100 text-start d-flex flex-row align-items-center" type="button" id="dropdownMenuButton" 
+            style="border-color: var(--bs-border-color); min-height: 38px;" data-bs-toggle="dropdown" 
             aria-expanded="false" data-bs-auto-close="@(IsMultiSelect ? "outside" : "true")">
-        @if (SelectedOptions.Count == 0)
-        {
-            @DefaultText
-        }
-        else if (SelectedOptionsRenderer == null)
-        {
-            @if (IsMultiSelect)
+        <div class="selected-items-container d-flex flex-grow-1 align-items-center overflow-hidden">
+            @if (SelectedOptions.Count == 0)
             {
-                @string.Join(", ", SelectedOptions.Select(StringSelector))
+                <span class="text-truncate">@DefaultText</span>
+            }
+            else if (SelectedOptionsRenderer == null)
+            {
+                @if (IsMultiSelect)
+                {
+                    <div class="text-truncate">@string.Join(", ", SelectedOptions.Select(StringSelector))</div>
+                }
+                else
+                {
+                    <span class="text-truncate">@StringSelector(SelectedOptions.FirstOrDefault())</span>
+                }
             }
             else
             {
-                @StringSelector(SelectedOptions.FirstOrDefault())
+                <div class="selected-items-wrapper d-flex flex-row flex-nowrap overflow-hidden">
+                    @SelectedOptionsRenderer(SelectedOptions)
+                </div>
             }
-        }
-        else
-        {
-            @SelectedOptionsRenderer(SelectedOptions)
-        }
+        </div>
     </button>
     <div class="dropdown-menu w-100" aria-labelledby="dropdownMenuButton" @ref="_dropdownMenuRef" @onwheel="OnScroll">
         @if (CanFilter)
@@ -79,6 +83,26 @@
         }
     </div>
 </div>
+
+<style>
+    .selected-items-container {
+        max-width: calc(100% - 20px);
+    }
+    
+    .selected-items-wrapper {
+        max-width: 100%;
+        flex-wrap: nowrap;
+        overflow-x: hidden;
+    }
+    
+    .selected-items-wrapper .badge {
+        flex-shrink: 0;
+        white-space: nowrap;
+        max-width: 100px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+</style>
 
 @code {
     [Parameter]
@@ -150,8 +174,6 @@
         {
             _paginatedOptions = Options.ToList();
         }
-        
-        Console.WriteLine($"Finished loading {ApiUrl}");
     }
 
     private bool DefaultFilterPredicate(TItem item, string filterText)
