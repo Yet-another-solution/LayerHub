@@ -1,8 +1,24 @@
 @page "/Manage/Layers"
+@using LayerHub.Shared.Dto.MapLayer
+@using Microsoft.FluentUI.AspNetCore.Components
 
 @layout ManageLayout
 
-<h3>Index</h3>
+<PageTitle>Layers</PageTitle>
+
+<div mb-3>
+    <h1 class="h1">Layers</h1>
+</div>
+
+<PaginatedListView T="MapLayerDto" CancellationToken="ComponentDetached"
+                   GetUrl="/Layer" 
+                   EditUrl="@("/Manage/Features/{Id}/Edit")" >
+    <PropertyColumn TProp="string" TGridItem="MapLayerDto" Property="@(e => e.Name)"/>
+    <PropertyColumn TProp="string" TGridItem="MapLayerDto" Property="@(e => e.Description ?? "")"/>
+    <TemplateColumn TGridItem="MapLayerDto">
+        @context.MapFeatures.Count
+    </TemplateColumn>
+</PaginatedListView>
 
 @code {
     

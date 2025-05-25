@@ -24,7 +24,7 @@ builder.Services.AddServicesAndRepositories();
 builder.Services.AddHttpClient("API", (serviceProvider, client) =>
 {
     var configuration = serviceProvider.GetRequiredService<IConfiguration>();
-    var apiUrl = configuration["services:Api:http:0"] ?? "http://Api:5000/";
+    var apiUrl = configuration["services:api:http:0"] ?? "https://api:5000/";
     client.BaseAddress = new Uri(apiUrl);
 });
 

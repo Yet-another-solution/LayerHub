@@ -18,14 +18,14 @@ var mongo = builder.AddMongoDB("LayerHubMongo")
 var mongodb = mongo.AddDatabase("LayerHubReadDb");
 
 // Setup API
-var api = builder.AddProject<LayerHub_Api>("Api")
+var api = builder.AddProject<LayerHub_Api>("api")
     .WithReference(mongodb, "MongoDbConnection")
     .WithReference(postgresdb, "DefaultConnection")
     .WaitFor(mongodb)
     .WaitFor(postgresdb);
 
 // Setup Web
-builder.AddProject<LayerHub_Web>("Web")
+builder.AddProject<LayerHub_Web>("web")
     .WithExternalHttpEndpoints()
     .WithReference(api);
 
