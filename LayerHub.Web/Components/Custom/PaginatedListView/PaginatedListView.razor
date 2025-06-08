@@ -22,22 +22,22 @@
             {
                 <button class="btn btn-primary flex-shrink-0" disabled @onclick="@(RedirectToCreate)">
                     <i class="bi bi-plus-square me-1"></i>
-                    Vytvoriť nový
+                    Create new
                 </button>
             }
             
             <div class="d-flex gap-2 d-none">
                 <div class="d-flex align-items-center">
                     <p class="mb-0">
-                        Zoradiť:
+                        Order By:
                     </p>
                 </div>
                 <select class="form-select" disabled style="width: 150px">
                     <option selected>Id</option>
                 </select>
                 <select class="form-select" disabled style="width: 150px">
-                    <option value="asc" selected>Vzostupne</option>
-                    <option value="desc">Zostupne</option>
+                    <option value="asc" selected>Ascending</option>
+                    <option value="desc">Descending</option>
                 </select>
             </div>
         </div>
@@ -45,12 +45,12 @@
         </div>
         <div class="d-flex justify-content-between rounded shadow-sm px-3 py-2 bg-white">
             <div class="col-auto d-flex justify-content-center align-items-center">
-                Počet: <b>@_paginatedList.TotalItems</b> 
+                Count: <b>@_paginatedList.TotalItems</b> 
             </div>
             <div class="col-auto d-flex gap-2">
                 <div class="d-flex">
                     <div style="line-height: 32px" class="px-3">
-                        Strana <b>@_paginatedList?.PageIndex</b> z <b>@_paginatedList?.TotalPages</b>
+                        Page <b>@_paginatedList?.PageIndex</b> / <b>@_paginatedList?.TotalPages</b>
                     </div>
                 </div>
             </div>
@@ -73,22 +73,22 @@
             {
                 <button class="btn btn-primary flex-shrink-0" @onclick="@(RedirectToCreate)">
                     <i class="bi bi-plus-square me-1"></i>
-                    Vytvoriť nový
+                    Create new
                 </button>
             }
             
             <div class="d-flex gap-2 d-none">
                 <div class="d-flex align-items-center">
                     <p class="mb-0">
-                        Zoradiť:
+                        Order by:
                     </p>
                 </div>
                 <select class="form-select" disabled style="width: 150px">
                     <option selected>Id</option>
                 </select>
                 <select class="form-select" disabled style="width: 150px">
-                    <option value="asc" selected>Vzostupne</option>
-                    <option value="desc">Zostupne</option>
+                    <option value="asc" selected>Ascending</option>
+                    <option value="desc">Descending</option>
                 </select>
             </div>
 
@@ -103,26 +103,26 @@
                 @ChildContent
                 @if (EditUrl is not null || DeleteUrl is not null || DetailsUrl is not null)
                 {
-                    <TemplateColumn Title="Akcie" Class="gap-2 d-flex">
+                    <TemplateColumn Title="Actions" Class="gap-2 d-flex">
                         @if (!string.IsNullOrEmpty(DetailsUrl))
                         {
                         <button class="btn btn-outline-secondary" @onclick="@(() => RedirectToDetails(context))">
                             <i class="bi bi-info"></i>
-                            Detaily
+                            Details
                         </button>
                         }
                         @if (!string.IsNullOrEmpty(EditUrl))
                         {
                             <button class="btn btn-outline-primary" @onclick="@(() => RedirectToEdit(context))">
                                 <i class="bi bi-pencil"></i>
-                                Upraviť
+                                Edit
                             </button>
                         }
                         @if (!string.IsNullOrEmpty(DeleteUrl))
                         {
                             <button class="btn btn-outline-danger" @onclick="@(() => Delete(context))">
                                 <i class="bi bi-trash"></i>
-                                Vymazať
+                                Delete
                             </button>
                         }
                     </TemplateColumn>
@@ -132,7 +132,7 @@
 
         <div class="d-flex justify-content-between rounded shadow-sm px-3 py-2 bg-white">
             <div class="col-auto d-flex justify-content-center align-items-center">
-                Počet: <b class="ps-2">@_paginatedList.TotalItems</b> 
+                Count: <b class="ps-2">@_paginatedList.TotalItems</b> 
             </div>
             <div class="col-auto d-flex gap-2">
                 <select class="form-select" @bind=@_numOfItems @bind:after="@LoadData" style="width: 150px">
@@ -148,7 +148,7 @@
                         <button class="btn btn-light" disabled="@(!_paginatedList.HasPreviousPage)" @onclick="@PrevPage"><i class="bi bi-chevron-left"></i></button>
                     </div>
                     <div style="line-height: 32px" class="px-3 flex-shrink-0">
-                        Strana <b>@_paginatedList.PageIndex</b> z <b>@_paginatedList.TotalPages</b>
+                        Page <b>@_paginatedList.PageIndex</b> / <b>@_paginatedList.TotalPages</b>
                     </div>
                     <div class="btn-group">
                         <button class="btn btn-light" disabled="@(!_paginatedList.HasNextPage)" @onclick="@NextPage"><i class="bi bi-chevron-right"></i></button>

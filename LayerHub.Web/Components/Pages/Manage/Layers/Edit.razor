@@ -20,52 +20,67 @@
         <CustomCard>
             @if (MapLayerDto is not null)
             {
-                <CustomEditForm T="MapLayerDto" 
-                               Object="UpdateMapLayerDto"
-                               PutUrl=@($"/Layer/{Id}")>
+                <CustomEditForm T="MapLayerDto"
+                                Object="UpdateMapLayerDto"
+                                PutUrl=@($"/Layer/{Id}")>
                     <div class="form-floating mb-3">
                         <input type="text" class="form-control" id="nameInput" @bind="UpdateMapLayerDto.Name">
                         <label for="nameInput">Name:</label>
                     </div>
                     <div class="form-floating mb-3">
-                        <textarea class="form-control" id="descriptionInput" @bind="UpdateMapLayerDto.Description" style="height: 90px"></textarea>
+                        <textarea class="form-control" id="descriptionInput" @bind="UpdateMapLayerDto.Description"
+                                  style="height: 90px"></textarea>
                         <label for="descriptionInput">Description</label>
                     </div>
-                    
-                    <PaginatedSelect TItem="MapFeatureDto"
-                                    Class="mb-3"
-                                    IsPaginated="true"
-                                    IsMultiSelect="true"
-                                    ApiUrl="/Feature"
-                                    SelectedOptions="MapFeatureDtos"
-                                    SelectedOptionsChanged="HandleFeaturesSelected"
-                                    DefaultText="Choose features...">
-                        <SelectedOptionsRenderer Context="items">
-                            @if (items.Count > 0)
-                            {
-                                <div class="d-flex flex-row flex-nowrap overflow-hidden">
-                                    @foreach (var item in items.Take(3))
-                                    {
-                                        <span class="badge bg-light text-dark me-1 text-truncate">
+
+                    <div class="mb-3">
+                        <label class="form-label">Features:</label>
+                        <PaginatedSelect TItem="MapFeatureDto"
+                                         IsPaginated="true"
+                                         IsMultiSelect="true"
+                                         ApiUrl="/Feature"
+                                         SelectedOptions="MapFeatureDtos"
+                                         SelectedOptionsChanged="HandleFeaturesSelected"
+                                         DefaultText="Choose features...">
+                            <SelectedOptionsRenderer Context="items">
+                                @if (items.Count > 0)
+                                {
+                                    <div class="d-flex flex-row flex-nowrap overflow-hidden">
+                                        @foreach (var item in items.Take(3))
+                                        {
+                                            <span class="badge bg-light text-dark me-1 text-truncate">
                                             @item.Name
                                         </span>
-                                    }
-                                    @if (items.Count > 3)
-                                    {
-                                        <span class="badge bg-secondary text-white">+@(items.Count - 3)</span>
-                                    }
-                                </div>
+                                        }
+                                        @if (items.Count > 3)
+                                        {
+                                            <span class="badge bg-secondary text-white">+@(items.Count - 3)</span>
+                                        }
+                                    </div>
+                                }
+                            </SelectedOptionsRenderer>
+                            <Option Context="item">
+                                @item.Name
+                            </Option>
+                        </PaginatedSelect>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Color:</label>
+                        <div class="row m-0 gap-3 form-control blue-100 d-flex flex-row justify-content-center">
+                            @foreach (var color in _bootstrapColors)
+                            {
+                                <div style="height: @_sz; width: @_sz; background-color: @color"
+                                     @onclick="() => SelectColor(color)"
+                                     class="shadow-sm @(_selectedColor == color ? "border border-2 border-dark rounded-3" : "rounded")"></div>
                             }
-                        </SelectedOptionsRenderer>
-                        <Option Context="item">
-                            @item.Name
-                        </Option>
-                    </PaginatedSelect>
+                        </div>
+                    </div>
                 </CustomEditForm>
             }
         </CustomCard>
     </div>
-    
+
     <MapLibre @ref="Map" Options="_mapOptions" Class="rounded"
               Height="50vh" @rendermode="InteractiveServer" OnLoad="OnMapLoad"/>
 </div>
@@ -99,8 +114,7 @@
         }
     }
 
-    [Parameter] 
-    public Guid Id { get; set; }
+    [Parameter] public Guid Id { get; set; }
 
     public MapLayerDto MapLayerDto { get; set; } = new() { Name = "" };
     public UpdateMapLayerDto UpdateMapLayerDto { get; set; } = new() { Name = "" };
@@ -111,7 +125,7 @@
         MapLayerDto = await HttpService.Get<MapLayerDto>($"Layer/{Id}");
 
         MapFeatureDtos = MapLayerDto.MapFeatures;
-        
+
         UpdateMapLayerDto = new UpdateMapLayerDto
         {
             Name = MapLayerDto.Name,
@@ -122,12 +136,12 @@
 
         await base.OnInitializedAsync();
     }
-    
+
     private async Task LoadGeoJson()
     {
         if (!MapFeatureDtos.Any())
             return;
-            
+
         try
         {
             await Map.RemoveLayer("GeoJsonLayerId");
@@ -169,7 +183,7 @@
                 Southwest = JsonSerializer.Deserialize<IGeometry>(MapFeatureDtos.First().GeometryJson).GetBounds().Southwest,
                 Northeast = JsonSerializer.Deserialize<IGeometry>(MapFeatureDtos.First().GeometryJson).GetBounds().Northeast,
             };
-            
+
             foreach (var feature in MapFeatureDtos)
             {
                 var geometry = JsonSerializer.Deserialize<IGeometry>(feature.GeometryJson);
@@ -201,5 +215,29 @@
         {
             // ignored
         }
+    }
+
+    private readonly string _sz = "40px";
+    private string _selectedColor = "#0d6efd";
+
+    // Create a list of Bootstrap colors
+    private readonly List<string> _bootstrapColors = new List<string>
+    {
+        "#0d6efd", // primary (blue)
+        "#6610f2", // indigo
+        "#6f42c1", // purple
+        "#d63384", // pink
+        "#dc3545", // danger (red)
+        "#fd7e14", // orange
+        "#ffc107", // warning (yellow)
+        "#198754", // success (green)
+        "#20c997", // teal
+        "#0dcaf0", // info (cyan)
+        "#adb5bd" // gray
+    };
+
+    private void SelectColor(string color)
+    {
+        _selectedColor = color;
     }
 }

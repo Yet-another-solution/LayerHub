@@ -212,7 +212,7 @@ public partial class PaginatedListView<T> : CustomComponentBase
         var id = item?.GetType().GetProperty(RouteParam)?.GetValue(item, null);
         await HttpService.Delete($"{DeleteUrl}/{id}");
 
-        ToastService.ShowSuccess("Položka bola vymazaná");
+        ToastService.ShowSuccess("Item was deleted");
         await LoadData();
     }
 }
