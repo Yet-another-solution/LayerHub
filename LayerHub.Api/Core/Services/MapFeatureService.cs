@@ -1,4 +1,3 @@
-using AutoMapper;
 using LayerHub.Api.Core.Domain.Exceptions;
 using LayerHub.Api.Core.Domain.Interfaces;
 using LayerHub.Api.Core.Domain.Mapping;
@@ -14,13 +13,11 @@ public class MapFeatureService : IMapFeatureService
 {
     private readonly ApplicationDbContext _context;
     private readonly IMapFeatureRepository _mapFeatureRepository;
-    private readonly IMapper _mapper;
 
-    public MapFeatureService(ApplicationDbContext context, IMapFeatureRepository mapFeatureRepository, IMapper mapper)
+    public MapFeatureService(ApplicationDbContext context, IMapFeatureRepository mapFeatureRepository)
     {
         _context = context;
         _mapFeatureRepository = mapFeatureRepository;
-        _mapper = mapper;
     }
 
     public async Task<PaginatedList<MapFeature>> Get(BasePaginator paginator, CancellationToken token)

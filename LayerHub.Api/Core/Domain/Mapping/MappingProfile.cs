@@ -5,7 +5,6 @@ using LayerHub.Shared.Dto.Tenant;
 using LayerHub.Shared.Dto.User;
 using LayerHub.Shared.Models;
 using LayerHub.Shared.Models.Identity;
-using LayerHub.Shared.ReadDocuments;
 using LayerHub.Shared.Utils;
 
 namespace LayerHub.Api.Core.Domain.Mapping;
@@ -32,8 +31,6 @@ public class MappingProfile : Profile
         CreateMap<UpdateMapFeatureDto, MapFeature>();
         CreateMap<PaginatedList<MapFeature>, PaginatedList<MapFeatureDto>>()
             .ConvertUsing<PagedListConverter<MapFeature, MapFeatureDto>>();
-        CreateMap<MapFeatureDocument, MapFeature>()
-            .ReverseMap();
 
         // MapLayer
         CreateMap<MapLayer, MapLayerDto>()
@@ -43,7 +40,5 @@ public class MappingProfile : Profile
         CreateMap<UpdateMapLayerDto, MapLayer>();
         CreateMap<PaginatedList<MapLayer>, PaginatedList<MapLayerDto>>()
             .ConvertUsing<PagedListConverter<MapLayer, MapLayerDto>>();
-        CreateMap<MapLayerDocument, MapLayer>()
-            .ReverseMap();
     }
 }

@@ -1,6 +1,7 @@
 using AutoMapper;
 using LayerHub.Api.Core.Domain.Exceptions;
 using LayerHub.Api.Core.Domain.Interfaces;
+using LayerHub.Api.Core.Domain.Mapping;
 using LayerHub.Api.Core.Services.Interfaces;
 using LayerHub.Api.Infrasctructure.Data;
 using LayerHub.Shared.Dto.MapLayer;
@@ -13,13 +14,11 @@ public class MapLayerService : IMapLayerService
 {
     private readonly ApplicationDbContext _context;
     private readonly IMapLayerRepository _mapLayerRepository;
-    private readonly IMapper _mapper;
 
-    public MapLayerService(ApplicationDbContext context, IMapLayerRepository mapLayerRepository, IMapper mapper)
+    public MapLayerService(ApplicationDbContext context, IMapLayerRepository mapLayerRepository)
     {
         _context = context;
         _mapLayerRepository = mapLayerRepository;
-        _mapper = mapper;
     }
 
     public async Task<PaginatedList<MapLayer>> Get(BasePaginator paginator, CancellationToken token)
@@ -40,7 +39,7 @@ public class MapLayerService : IMapLayerService
 
     public async Task<MapLayer> Create(NewMapLayerDto dto)
     {
-        var mapLayer = _mapper.Map<MapLayer>(dto);
+        var mapLayer = MapLayerMapper.MapToEntity(dto);
 
         foreach (var featureId in dto.MapFeatureIds)
         {
@@ -65,7 +64,7 @@ public class MapLayerService : IMapLayerService
             throw new NotFoundException("Map layer not found");
         }
 
-        _mapper.Map(dto, mapLayer);
+        MapLayerMapper.UpdateFromDto(dto, mapLayer);
 
         // Update feature associations
         // Remove existing associations

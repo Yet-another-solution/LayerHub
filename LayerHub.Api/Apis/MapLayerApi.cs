@@ -1,6 +1,5 @@
-using System.Text.Json;
-using AutoMapper;
 using LayerHub.Api.Core.Domain.Exceptions;
+using LayerHub.Api.Core.Domain.Mapping;
 using LayerHub.Api.Core.Services.Interfaces;
 using LayerHub.Shared.Dto;
 using LayerHub.Shared.Dto.MapLayer;
@@ -38,19 +37,17 @@ public static class MapLayerApi
 
     public static async Task<Results<Ok<PaginatedListDto<MapLayerDto>>, ProblemHttpResult>> GetLayers(
         IMapLayerService layerService, 
-        IMapper mapper, 
         [AsParameters] BasePaginator paginator, 
         CancellationToken cancellationToken)
     {
         var layers = await layerService.Get(paginator, cancellationToken);
-        var dto = mapper.Map<PaginatedList<MapLayerDto>>(layers);
+        var dto = MapLayerMapper.MapToPaginatedDtoList(layers);
 
         return TypedResults.Ok(new PaginatedListDto<MapLayerDto>(dto));
     }
 
     public static async Task<Results<Ok<MapLayerDto>, NotFound, ProblemHttpResult>> GetLayer(
         IMapLayerService layerService, 
-        IMapper mapper, 
         [FromRoute] Guid id)
     {
         var layer = await layerService.Get(id);
@@ -60,28 +57,26 @@ public static class MapLayerApi
             throw new NotFoundException();
         }
 
-        return TypedResults.Ok(mapper.Map<MapLayerDto>(layer));
+        return TypedResults.Ok(MapLayerMapper.MapToDtoWithFeatures(layer));
     }
 
     public static async Task<Results<Created<MapLayerDto>, ProblemHttpResult>> CreateLayer(
         IMapLayerService layerService, 
-        IMapper mapper,
         [FromBody] NewMapLayerDto dto)
     {
         var layer = await layerService.Create(dto);
 
-        return TypedResults.Created("", mapper.Map<MapLayerDto>(layer));
+        return TypedResults.Created("", MapLayerMapper.MapToDto(layer));
     }
 
     public static async Task<Results<Ok<MapLayerDto>, NotFound, ProblemHttpResult>> UpdateLayer(
         IMapLayerService layerService, 
-        IMapper mapper, 
         [FromRoute] Guid id,
         [FromBody] UpdateMapLayerDto dto)
     {
         var layer = await layerService.Update(id, dto);
 
-        return TypedResults.Ok(mapper.Map<MapLayerDto>(layer));
+        return TypedResults.Ok(MapLayerMapper.MapToDto(layer));
     }
 
     public static async Task<Results<NoContent, NotFound, ProblemHttpResult>> DeleteLayer(
