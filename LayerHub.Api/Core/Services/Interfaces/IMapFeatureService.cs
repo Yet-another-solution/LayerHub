@@ -6,7 +6,7 @@ namespace LayerHub.Api.Core.Services.Interfaces;
 
 public interface IMapFeatureService
 {
-    Task<List<MapFeature>> Get(BasePaginator paginator, CancellationToken token);
+    Task<PaginatedList<MapFeature>> Get(BasePaginator paginator, CancellationToken token);
     Task<MapFeature?> Get(Guid id);
     Task<MapFeature> Create(NewMapFeatureDto dto);
     Task<MapFeature> Update(Guid id, UpdateMapFeatureDto dto);

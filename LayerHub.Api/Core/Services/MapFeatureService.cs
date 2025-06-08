@@ -1,6 +1,7 @@
 using AutoMapper;
 using LayerHub.Api.Core.Domain.Exceptions;
 using LayerHub.Api.Core.Domain.Interfaces;
+using LayerHub.Api.Core.Domain.Mapping;
 using LayerHub.Api.Core.Services.Interfaces;
 using LayerHub.Api.Infrasctructure.Data;
 using LayerHub.Shared.Dto.MapFeature;
@@ -22,7 +23,7 @@ public class MapFeatureService : IMapFeatureService
         _mapper = mapper;
     }
 
-    public async Task<List<MapFeature>> Get(BasePaginator paginator, CancellationToken token)
+    public async Task<PaginatedList<MapFeature>> Get(BasePaginator paginator, CancellationToken token)
     {
         return await _mapFeatureRepository.Get(paginator, token);
     }
@@ -40,11 +41,11 @@ public class MapFeatureService : IMapFeatureService
 
     public async Task<MapFeature> Create(NewMapFeatureDto dto)
     {
-        var mapFeature = _mapper.Map<MapFeature>(dto);
-        
+        var mapFeature = MapFeatureMapper.MapToEntity(dto);
+
         _mapFeatureRepository.Create(mapFeature);
         await _context.SaveChangesAsync();
-        
+
         return mapFeature;
     }
 
@@ -56,7 +57,7 @@ public class MapFeatureService : IMapFeatureService
             throw new NotFoundException("Map feature not found");
         }
 
-        mapFeature = _mapper.Map(dto, mapFeature);
+        MapFeatureMapper.UpdateFromDto(dto, mapFeature);
 
         _mapFeatureRepository.Update(mapFeature);
         await _context.SaveChangesAsync();

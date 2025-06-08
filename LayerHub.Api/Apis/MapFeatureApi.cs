@@ -1,6 +1,7 @@
 using System.Text.Json;
 using AutoMapper;
 using LayerHub.Api.Core.Domain.Exceptions;
+using LayerHub.Api.Core.Domain.Mapping;
 using LayerHub.Api.Core.Services.Interfaces;
 using LayerHub.Shared.Dto;
 using LayerHub.Shared.Dto.MapFeature;
@@ -38,19 +39,17 @@ public static class MapFeatureApi
 
     public static async Task<Results<Ok<PaginatedListDto<MapFeatureDto>>, ProblemHttpResult>> GetFeatures(
         IMapFeatureService featureService, 
-        IMapper mapper, 
         [AsParameters] BasePaginator paginator, 
         CancellationToken cancellationToken)
     {
         var features = await featureService.Get(paginator, cancellationToken);
-        var dto = mapper.Map<PaginatedList<MapFeatureDto>>(features);
+        var dto = MapFeatureMapper.MapToPaginatedDtoList(features);
 
         return TypedResults.Ok(new PaginatedListDto<MapFeatureDto>(dto));
     }
 
     public static async Task<Results<Ok<MapFeatureDto>, NotFound, ProblemHttpResult>> GetFeature(
         IMapFeatureService featureService, 
-        IMapper mapper, 
         [FromRoute] Guid id)
     {
         var feature = await featureService.Get(id);
@@ -59,31 +58,27 @@ public static class MapFeatureApi
         {
             throw new NotFoundException();
         }
-        var dto = mapper.Map<MapFeatureDto>(feature);
-        Console.WriteLine(JsonSerializer.Serialize(dto));
 
-        return TypedResults.Ok(mapper.Map<MapFeatureDto>(feature));
+        return TypedResults.Ok(MapFeatureMapper.MapToDto(feature));
     }
 
     public static async Task<Results<Created<MapFeatureDto>, ProblemHttpResult>> CreateFeature(
         IMapFeatureService featureService, 
-        IMapper mapper,
         [FromBody] NewMapFeatureDto dto)
     {
         var feature = await featureService.Create(dto);
 
-        return TypedResults.Created("", mapper.Map<MapFeatureDto>(feature));
+        return TypedResults.Created("", MapFeatureMapper.MapToDto(feature));
     }
 
     public static async Task<Results<Ok<MapFeatureDto>, NotFound, ProblemHttpResult>> UpdateFeature(
         IMapFeatureService featureService, 
-        IMapper mapper, 
         [FromRoute] Guid id,
         [FromBody] UpdateMapFeatureDto dto)
     {
         var feature = await featureService.Update(id, dto);
 
-        return TypedResults.Ok(mapper.Map<MapFeatureDto>(feature));
+        return TypedResults.Ok(MapFeatureMapper.MapToDto(feature));
     }
 
     public static async Task<Results<NoContent, NotFound, ProblemHttpResult>> DeleteFeature(
