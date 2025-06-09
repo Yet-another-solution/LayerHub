@@ -41,8 +41,9 @@ public static class MapLayerApi
         CancellationToken cancellationToken)
     {
         var layers = await layerService.Get(paginator, cancellationToken);
+        var dto = MapLayerMapper.MapToPaginatedDtoList(layers);
 
-        return TypedResults.Ok(new PaginatedListDto<MapLayerDto>(layers));
+        return TypedResults.Ok(new PaginatedListDto<MapLayerDto>(dto));
     }
 
     public static async Task<Results<Ok<MapLayerDto>, NotFound, ProblemHttpResult>> GetLayer(

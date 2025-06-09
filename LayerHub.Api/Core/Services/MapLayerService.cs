@@ -21,7 +21,7 @@ public class MapLayerService : IMapLayerService
         _mapLayerRepository = mapLayerRepository;
     }
 
-    public async Task<PaginatedList<MapLayerDto>> Get(BasePaginator paginator, CancellationToken token)
+    public async Task<PaginatedList<MapLayer>> Get(BasePaginator paginator, CancellationToken token)
     {
         return await _mapLayerRepository.Get(paginator, token);
     }

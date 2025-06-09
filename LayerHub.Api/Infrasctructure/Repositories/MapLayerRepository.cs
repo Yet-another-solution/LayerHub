@@ -21,31 +21,12 @@ public class MapLayerRepository : IMapLayerRepository
         _mongoDbContext = mongoDbContext;
     }
 
-    public async Task<PaginatedList<MapLayerDto>> Get(BasePaginator paginator, CancellationToken token)
+    public async Task<PaginatedList<MapLayer>> Get(BasePaginator paginator, CancellationToken token)
     {
-        // Get total count for pagination
-        var totalCount = await _mongoDbContext.MapLayers
-            .CountDocumentsAsync(Builders<MapLayerDocument>.Filter.Empty, cancellationToken: token);
+        var query = _context.MapLayers
+            .AsQueryable();
 
-        // Get paginated items
-        var items = await _mongoDbContext.MapLayers
-            .Find(Builders<MapLayerDocument>.Filter.Empty)
-            .Skip((paginator.Page - 1) * paginator.ItemsPerPage)
-            .Limit(paginator.ItemsPerPage)
-            .ToListAsync(token);
-
-        // Calculate total pages
-        var totalPages = (int)Math.Ceiling(totalCount / (double)paginator.ItemsPerPage);
-
-        // Map MongoDB documents to domain models if needed
-        var mappedItems = items.Select(doc => MapLayerMapper.MapToDto(doc)).ToList();
-
-        return new PaginatedList<MapLayerDto>(
-            mappedItems,
-            totalPages,
-            (int)totalCount,
-            paginator.Page,
-            paginator.ItemsPerPage);
+        return await PaginatedList<MapLayer>.CreateAsync(query, paginator.Page, paginator.ItemsPerPage, token);
     }
 
 
