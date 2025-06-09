@@ -6,7 +6,7 @@ namespace LayerHub.Api.Core.Services.Interfaces;
 
 public interface IMapLayerService
 {
-    Task<PaginatedList<MapLayer>> Get(BasePaginator paginator, CancellationToken token);
+    Task<PaginatedList<MapLayerDto>> Get(BasePaginator paginator, CancellationToken token);
     Task<MapLayer?> Get(Guid id);
     Task<MapLayer> Create(NewMapLayerDto dto);
     Task<MapLayer> Update(Guid id, UpdateMapLayerDto dto);

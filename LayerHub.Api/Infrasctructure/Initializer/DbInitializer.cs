@@ -4,9 +4,11 @@ using Community.Blazor.MapLibre.Models.Feature;
 using CsvHelper;
 using CsvHelper.Configuration;
 using CsvHelper.Configuration.Attributes;
+using LayerHub.Api.Core.Domain.Mapping;
 using LayerHub.Api.Infrasctructure.Data;
 using LayerHub.Shared.Models;
 using LayerHub.Shared.Models.Identity;
+using LayerHub.Shared.ReadDocuments;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,17 +21,22 @@ public class DbInitializer
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IWebHostEnvironment _environment;
     private readonly TimeProvider _timeProvider;
+    private readonly MongoDbContext _mongoContext;
 
     public DbInitializer(
         ApplicationDbContext context,
         ILogger<DbInitializer> logger,
-        UserManager<ApplicationUser> userManager, IWebHostEnvironment environment, TimeProvider timeProvider)
+        UserManager<ApplicationUser> userManager, 
+        IWebHostEnvironment environment, 
+        TimeProvider timeProvider, 
+        MongoDbContext mongoContext)
     {
         _context = context;
         _logger = logger;
         _userManager = userManager;
         _environment = environment;
         _timeProvider = timeProvider;
+        _mongoContext = mongoContext;
     }
 
     public async Task InitializeAsync()
@@ -166,6 +173,23 @@ public class DbInitializer
             {
                 await _context.MapFeatures.AddRangeAsync(features);
                 _logger.LogInformation("Added {Count} map features from CSV to be saved", features.Count);
+                
+                // Group features by the first word
+                var groupedFeatures = features.GroupBy(f => f.Name.Split(" ")[0]);
+                foreach (var group in groupedFeatures)
+                {
+                    var layer = new MapLayerDocument()
+                    {
+                        Id = Guid.CreateVersion7(),
+                        Name = group.Key,
+                        Description = group.Key,
+                        OwnerId = Guid.Parse("3e76f4ef-a76c-4442-a931-573a00475e3d")
+                    };
+
+                    layer.MapFeatures = group.Select(f => MapFeatureMapper.MapToDocument(f)).ToList();
+
+                    await _mongoContext.MapLayers.InsertOneAsync(layer);
+                }
             }
             else
             {

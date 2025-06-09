@@ -1,6 +1,7 @@
 using System.Text.Json;
 using LayerHub.Shared.Dto.MapFeature;
 using LayerHub.Shared.Models;
+using LayerHub.Shared.ReadDocuments;
 using LayerHub.Shared.Utils;
 using Riok.Mapperly.Abstractions;
 
@@ -18,6 +19,7 @@ public partial class MapFeatureMapper
     [MapperIgnoreSource(nameof(MapFeature.OwnerId))]
     [MapperIgnoreSource(nameof(MapFeature.Owner))]
     public static partial MapFeatureDto MapToDto(MapFeature source);
+    public static partial MapFeatureDto MapToDto(MapFeatureDocument source);
     
     /// <summary>
     /// Maps from NewMapFeatureDto to MapFeature entity
@@ -61,4 +63,11 @@ public partial class MapFeatureMapper
     [MapperIgnoreTarget(nameof(MapFeature.OwnerId))]
     [MapperIgnoreTarget(nameof(MapFeature.Owner))]
     public static partial void UpdateFromDto(UpdateMapFeatureDto source, MapFeature target);
+
+    [MapperIgnoreSource(nameof(MapFeature.CreatedAt))]
+    [MapperIgnoreSource(nameof(MapFeature.UpdatedAt))]
+    [MapperIgnoreSource(nameof(MapFeature.DeletedAt))]
+    [MapperIgnoreSource(nameof(MapFeature.OwnerId))]
+    [MapperIgnoreSource(nameof(MapFeature.Owner))]
+    public static partial MapFeatureDocument MapToDocument(MapFeature source);
 }

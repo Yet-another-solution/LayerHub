@@ -4,6 +4,7 @@ using System.Text.Json;
 using LayerHub.Api.Infrasctructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LayerHub.Api.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250609145841_AddDefaultLayerSetting")]
+    partial class AddDefaultLayerSetting
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -177,7 +180,7 @@ namespace LayerHub.Api.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("MapFeatures", (string)null);
+                    b.ToTable("MapFeatures");
                 });
 
             modelBuilder.Entity("LayerHub.Shared.Models.MapFeatureLayer", b =>
@@ -192,7 +195,7 @@ namespace LayerHub.Api.Migrations
 
                     b.HasIndex("MapLayerId");
 
-                    b.ToTable("MapFeatureLayers", (string)null);
+                    b.ToTable("MapFeatureLayers");
                 });
 
             modelBuilder.Entity("LayerHub.Shared.Models.MapLayer", b =>
@@ -228,7 +231,7 @@ namespace LayerHub.Api.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("MapLayers", (string)null);
+                    b.ToTable("MapLayers");
                 });
 
             modelBuilder.Entity("LayerHub.Shared.Models.Tenant", b =>
@@ -246,7 +249,7 @@ namespace LayerHub.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Tenants", (string)null);
+                    b.ToTable("Tenants");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>

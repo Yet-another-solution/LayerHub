@@ -1,14 +1,17 @@
 using System.Text.Json;
-using Community.Blazor.MapLibre.Models.Layers;
-using LayerHub.Shared.Models.Interfaces;
+using LayerHub.Shared.Models;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
-namespace LayerHub.Shared.Models;
+namespace LayerHub.Shared.ReadDocuments;
 
-public class MapLayer : ISoftDeletable, IOwned, ITrackable
+public class MapLayerDocument
 {
     /// <summary>
     /// Gets or sets the unique identifier for the map layer.
     /// </summary>
+    [BsonId]
+    [BsonRepresentation(BsonType.String)]
     public Guid Id { get; set; }
 
     /// <summary>
@@ -24,17 +27,14 @@ public class MapLayer : ISoftDeletable, IOwned, ITrackable
     /// <summary>
     /// Gets or sets the serialized representation of the map layer.
     /// </summary>
-    public Layer? Layer { get; set; }
+    public JsonDocument Layer { get; set; } = JsonDocument.Parse("{}");
 
     /// <summary>
     /// Gets or sets the collection of feature layers associated with the map layer.
     /// </summary>
-    public List<MapFeatureLayer> MapFeatureLayers { get; set; } = new();
+    public List<MapFeatureDocument> MapFeatures { get; set; } = new();
 
     // Interfaces
-    public DateTimeOffset? DeletedAt { get; set; }
+    [BsonRepresentation(BsonType.String)]
     public Guid OwnerId { get; set; }
-    public Tenant? Owner { get; set; }
-    public DateTimeOffset CreatedAt { get; set; }
-    public DateTimeOffset UpdatedAt { get; set; }
 }
