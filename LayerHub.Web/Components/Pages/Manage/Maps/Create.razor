@@ -1,5 +1,10 @@
 @page "/Manage/Maps/Create"
+@using System.Text.Json
 @using Community.Blazor.MapLibre.Models
+@using Community.Blazor.MapLibre.Models.Camera
+@using Community.Blazor.MapLibre.Models.Feature
+@using Community.Blazor.MapLibre.Models.Layers
+@using Community.Blazor.MapLibre.Models.Sources
 @using LayerHub.Shared.Dto.MapLayer
 @using LayerHub.Shared.Dto.MapProject
 @using LayerHub.Web.Application.Services
@@ -115,42 +120,59 @@
         VisibleStart = DateTimeOffset.UtcNow
     };
 
+    List<string> layerIds = new();
+    private async Task RemoveLayers()
+    {
+        foreach (var layerId in layerIds)
+        {
+            try
+            {
+                await Map.RemoveLayer(layerId);
+                await Map.RemoveSource(layerId);
+            }
+            catch (Exception e)
+            {
+                // Ignore
+            }
+        }
+
+        layerIds.RemoveAll(l => true);
+    }
+
     private async Task LoadGeoJson()
     {
-        try
-        {
-            await Map.RemoveLayer("GeoJsonLayerId");
-            await Map.RemoveSource("maine");
-        }
-        catch (Exception)
-        {
-            // ignored
-        }
+        await RemoveLayers();
 
-        /*
-        await Map.AddSource("maine", new GeoJsonSource()
+        foreach (var layerDto in MapLayerDtos)
         {
-            Data = new FeatureCollection()
+            await Map.AddSource(layerDto.Id.ToString(), new GeoJsonSource()
             {
-                Features = new List<IFeature>(MapLayerDtos.Select(mf => new FeatureFeature()
+                Data = new FeatureCollection()
                 {
-                    Geometry = JsonSerializer.Deserialize<IGeometry>(mf.GeometryJson)
-                }))
-            }
-        });
+                    Features = new List<IFeature>(layerDto.MapFeatures.Select(mf => new FeatureFeature()
+                    {
+                        Geometry = JsonSerializer.Deserialize<IGeometry>(mf.GeometryJson)
+                    }))
+                }
+            });
+            
+            layerIds.Add(layerDto.Id.ToString());
 
-        await Map.AddLayer(new FillLayer()
-        {
-            Id = "GeoJsonLayerId",
-            Source = "maine",
-            Paint = new FillLayerPaint()
+            await Map.AddLayer(new FillLayer()
             {
-                FillColor = "#088",
-                FillOpacity = 0.8,
-                FillOutlineColor = "#008888"
-            }
-        });*/
-/*
+                Id = layerDto.Id.ToString(),
+                Source = layerDto.Id.ToString(),
+                Paint = new FillLayerPaint()
+                {
+                    FillColor = "#088",
+                    FillOpacity = 0.8,
+                    FillOutlineColor = "#008888"
+                }
+            });
+        }
+
+        var MapFeatureDtos = MapLayerDtos.SelectMany(ml => ml.MapFeatures.Select(mf => mf))
+            .ToList();
         // Get the coordinates from the polygon
         var bounds = new LngLatBounds
         {
@@ -172,7 +194,6 @@
 
         // Fit the map to the bounds
         await Map.FitBounds(bounds, fitBoundsOptions);
-        */
     }
 
     public List<MapLayerDto> MapLayerDtos { get; set; } = new();

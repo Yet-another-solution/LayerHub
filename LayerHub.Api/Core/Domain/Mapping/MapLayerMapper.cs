@@ -51,7 +51,17 @@ public partial class MapLayerMapper
     /// <summary>
     /// Maps from a collection of MapLayer entities to a collection of MapLayerDto
     /// </summary>
-    public static partial List<MapLayerDto> MapToDtoList(List<MapLayer> source);
+    public static List<MapLayerDto> MapToDtoList(List<MapLayer> source)
+    {
+        var result = new List<MapLayerDto>();
+        
+        foreach (var layer in source)
+        {
+            result.Add(MapToDtoWithFeatures(layer));
+        }
+        
+        return result;
+    }
 
     /// <summary>
     /// Maps a PaginatedList of MapLayer entities to a PaginatedList of MapLayerDto objects.
