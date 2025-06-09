@@ -1,5 +1,4 @@
-using System.Text.Json;
-using LayerHub.Shared.Models;
+using Community.Blazor.MapLibre.Models.Layers;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
@@ -27,7 +26,7 @@ public class MapLayerDocument
     /// <summary>
     /// Gets or sets the serialized representation of the map layer.
     /// </summary>
-    public JsonDocument Layer { get; set; } = JsonDocument.Parse("{}");
+    public Layer? Layer { get; set; }
 
     /// <summary>
     /// Gets or sets the collection of feature layers associated with the map layer.

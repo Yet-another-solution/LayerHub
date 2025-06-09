@@ -178,7 +178,7 @@ public class DbInitializer
                 var groupedFeatures = features.GroupBy(f => f.Name.Split(" ")[0]);
                 foreach (var group in groupedFeatures)
                 {
-                    var layer = new MapLayerDocument()
+                    var mapLayer = new MapLayer
                     {
                         Id = Guid.CreateVersion7(),
                         Name = group.Key,
@@ -186,9 +186,17 @@ public class DbInitializer
                         OwnerId = Guid.Parse("3e76f4ef-a76c-4442-a931-573a00475e3d")
                     };
 
-                    layer.MapFeatures = group.Select(f => MapFeatureMapper.MapToDocument(f)).ToList();
+                    await _context.MapLayers.AddAsync(mapLayer);
 
-                    await _mongoContext.MapLayers.InsertOneAsync(layer);
+                    foreach (var feature in group)
+                    {
+                        var featureLayer = new MapFeatureLayer()
+                        {
+                            MapFeatureId = feature.Id,
+                            MapLayerId = mapLayer.Id,
+                        };
+                        await _context.MapFeatureLayers.AddAsync(featureLayer);
+                    }
                 }
             }
             else

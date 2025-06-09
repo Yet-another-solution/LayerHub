@@ -1,6 +1,5 @@
 using LayerHub.Shared.Dto.MapLayer;
 using LayerHub.Shared.Models;
-using LayerHub.Shared.ReadDocuments;
 using LayerHub.Shared.Utils;
 using Riok.Mapperly.Abstractions;
 
@@ -19,11 +18,6 @@ public partial class MapLayerMapper
     [MapperIgnoreTarget(nameof(MapLayerDto.MapFeatures))]
     [UserMapping(Default = true)]
     public static partial MapLayerDto MapToDto(MapLayer source);
-
-    [MapperIgnoreSource(nameof(MapLayerDocument.OwnerId))]
-    [MapperIgnoreTarget(nameof(MapLayerDto.CreatedAt))]
-    [MapperIgnoreTarget(nameof(MapLayerDto.UpdatedAt))]
-    public static partial MapLayerDto MapToDto(MapLayerDocument document);
 
     /// <summary>
     /// Maps MapLayer to MapLayerDto including Features
@@ -87,26 +81,4 @@ public partial class MapLayerMapper
     [MapperIgnoreTarget(nameof(MapLayer.MapFeatureLayers))]
     [MapperIgnoreSource(nameof(UpdateMapLayerDto.MapFeatureIds))]
     public static partial void UpdateFromDto(UpdateMapLayerDto source, MapLayer target);
-
-    [MapperIgnoreTarget(nameof(MapLayerDocument.OwnerId))]
-    [MapperIgnoreSource(nameof(MapLayer.CreatedAt))]
-    [MapperIgnoreSource(nameof(MapLayer.UpdatedAt))]
-    [MapperIgnoreSource(nameof(MapLayer.DeletedAt))]
-    [MapperIgnoreSource(nameof(MapLayer.MapFeatureLayers))]
-    [MapperIgnoreSource(nameof(MapLayer.OwnerId))]
-    [MapperIgnoreSource(nameof(MapLayer.Owner))]
-    [MapperIgnoreTarget(nameof(MapLayerDocument.MapFeatures))]
-    public static partial MapLayerDocument MapToDocument(MapLayer source);
-
-    public static MapLayerDocument MapToDocumentWithFeatures(MapLayer source)
-    {
-        var document = MapToDocument(source);
-        
-        document.MapFeatures = source.MapFeatureLayers
-            .Where(mfl => mfl.MapFeature != null)
-            .Select(mfl => MapFeatureMapper.MapToDocument(mfl.MapFeature!))
-            .ToList();
-        
-        return document;
-    }
 }
