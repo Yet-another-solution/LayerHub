@@ -27,7 +27,8 @@ public class MapProjectRepository : IMapProjectRepository
     {
         return await _context.MapProjects
             .Include(mp => mp.MapProjectLayers)
-            .ThenInclude(mpl => mpl.MapLayer)
+            .ThenInclude(mpl => mpl.MapLayer.MapFeatureLayers)
+            .ThenInclude(mfl => mfl.MapFeature)
             .SingleOrDefaultAsync(t => t.Id == id);
     }
 

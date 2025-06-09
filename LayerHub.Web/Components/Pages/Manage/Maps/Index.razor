@@ -13,7 +13,7 @@
 <PaginatedListView T="MapProjectDto" CancellationToken="ComponentDetached"
                    GetUrl="/Project" 
                    CreateUrl="/Manage/Maps/Create"
-                   EditUrl="@("/Manage/Map/{Id}/Edit")" >
+                   EditUrl="@("/Manage/Maps/{Id}/Edit")" >
     <PropertyColumn TProp="string" TGridItem="MapProjectDto" Property="@(e => e.Name)"/>
     <PropertyColumn TProp="string" TGridItem="MapProjectDto" Property="@(e => e.DisplayName ?? "")"/>
     <TemplateColumn TGridItem="MapProjectDto" Title="Is Public">

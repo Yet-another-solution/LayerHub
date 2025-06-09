@@ -47,7 +47,7 @@ public partial class MapProjectMapper
         {
             if (projectLayer.MapLayer != null)
             {
-                dto.Layers.Add(MapLayerMapper.MapToDto(projectLayer.MapLayer));
+                dto.Layers.Add(MapLayerMapper.MapToDtoWithFeatures(projectLayer.MapLayer));
             }
         }
 

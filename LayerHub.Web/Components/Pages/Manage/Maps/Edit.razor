@@ -5,77 +5,78 @@
 @using Community.Blazor.MapLibre.Models.Feature
 @using Community.Blazor.MapLibre.Models.Layers
 @using Community.Blazor.MapLibre.Models.Sources
-@using LayerHub.Shared.Dto.MapFeature
 @using LayerHub.Shared.Dto.MapLayer
+@using LayerHub.Shared.Dto.MapProject
 @using LayerHub.Web.Application.Services
 
 @layout ManageLayout
 
 @inject IHttpService HttpService
 
-<h3>Edit</h3>
+<h3>Edit Map Project</h3>
 
 <div class="d-flex gap-3 flex-sm-row flex-column">
     <div class="col-sm-4">
         <CustomCard>
-            @if (MapLayerDto is not null)
+            @if (MapProjectDto is not null)
             {
-                <CustomEditForm T="MapLayerDto"
-                                Object="UpdateMapLayerDto"
-                                PutUrl=@($"/Layer/{Id}")>
+                <CustomEditForm T="MapProjectDto"
+                                Object="UpdateMapProjectDto"
+                                PutUrl=@($"/Project/{Id}")>
                     <div class="form-floating mb-3">
-                        <input type="text" class="form-control" id="nameInput" @bind="UpdateMapLayerDto.Name">
+                        <input type="text" class="form-control" id="nameInput" @bind="UpdateMapProjectDto.Name">
                         <label for="nameInput">Name:</label>
                     </div>
                     <div class="form-floating mb-3">
-                        <textarea class="form-control" id="descriptionInput" @bind="UpdateMapLayerDto.Description"
-                                  style="height: 90px"></textarea>
-                        <label for="descriptionInput">Description</label>
+                        <input type="text" class="form-control" id="displayNameInput" @bind="UpdateMapProjectDto.DisplayName">
+                        <label for="displayNameInput">Display Name:</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="urlInput" @bind="UpdateMapProjectDto.Url">
+                        <label for="urlInput">URL:</label>
+                    </div>
+                    <div class="form-check form-switch mb-3">
+                        <input type="checkbox" @bind="UpdateMapProjectDto.IsPublished" class="form-check-input"/>
+                        <label for="isPublishedInput" class="form-check-label">Is Published</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="date" @bind="UpdateMapProjectDto.VisibleStart" class="form-control"/>
+                        <label for="visibleStartInput">Visible from:</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="date" @bind="UpdateMapProjectDto.VisibleEnd" class="form-control"/>
+                        <label for="visibleEndInput">Visible to:</label>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Features:</label>
-                        <PaginatedSelect TItem="MapFeatureDto"
-                                         IsPaginated="true"
-                                         IsMultiSelect="true"
-                                         ApiUrl="/Feature"
-                                         SelectedOptions="MapFeatureDtos"
-                                         SelectedOptionsChanged="HandleFeaturesSelected"
-                                         DefaultText="Choose features...">
-                            <SelectedOptionsRenderer Context="items">
-                                @if (items.Count > 0)
-                                {
-                                    <div class="d-flex flex-row flex-nowrap overflow-hidden">
-                                        @foreach (var item in items.Take(3))
-                                        {
-                                            <span class="badge bg-light text-dark me-1 text-truncate">
-                                            @item.Name
-                                        </span>
-                                        }
-                                        @if (items.Count > 3)
-                                        {
-                                            <span class="badge bg-secondary text-white">+@(items.Count - 3)</span>
-                                        }
-                                    </div>
-                                }
-                            </SelectedOptionsRenderer>
-                            <Option Context="item">
-                                @item.Name
-                            </Option>
-                        </PaginatedSelect>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Color:</label>
-                        <div class="row m-0 gap-3 form-control blue-100 d-flex flex-row justify-content-center">
-                            @foreach (var color in _bootstrapColors)
+                    <PaginatedSelect TItem="MapLayerDto"
+                                     Class="mb-3"
+                                     IsPaginated="true"
+                                     IsMultiSelect="true"
+                                     ApiUrl="/Layer"
+                                     SelectedOptions="MapLayerDtos"
+                                     SelectedOptionsChanged="HandleLayersSelected"
+                                     DefaultText="Choose layers...">
+                        <SelectedOptionsRenderer Context="items">
+                            @if (items.Count > 0)
                             {
-                                <div style="height: @_sz; width: @_sz; background-color: @color"
-                                     @onclick="() => SelectColor(color)"
-                                     class="shadow-sm @(_selectedColor == color ? "border border-2 border-dark rounded-3" : "rounded")"></div>
+                                <div class="d-flex flex-row flex-nowrap overflow-hidden">
+                                    @foreach (var item in items.Take(3))
+                                    {
+                                        <span class="badge bg-light text-dark me-1 text-truncate">
+                                        @item.Name
+                                    </span>
+                                    }
+                                    @if (items.Count > 3)
+                                    {
+                                        <span class="badge bg-secondary text-white">+@(items.Count - 3)</span>
+                                    }
+                                </div>
                             }
-                        </div>
-                    </div>
+                        </SelectedOptionsRenderer>
+                        <Option Context="item">
+                            @item.Name
+                        </Option>
+                    </PaginatedSelect>
                 </CustomEditForm>
             }
         </CustomCard>
@@ -116,96 +117,114 @@
 
     [Parameter] public Guid Id { get; set; }
 
-    public MapLayerDto MapLayerDto { get; set; } = new() { Name = "" };
-    public UpdateMapLayerDto UpdateMapLayerDto { get; set; } = new() { Name = "" };
-    public List<MapFeatureDto> MapFeatureDtos { get; set; } = new();
+    public MapProjectDto MapProjectDto { get; set; } = new() { Name = "", Url = "" };
+    public UpdateMapProjectDto UpdateMapProjectDto { get; set; } = new() { Name = "", Url = "" };
+    public List<MapLayerDto> MapLayerDtos { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
     {
-        MapLayerDto = await HttpService.Get<MapLayerDto>($"Layer/{Id}");
+        MapProjectDto = await HttpService.Get<MapProjectDto>($"Project/{Id}");
 
-        MapFeatureDtos = MapLayerDto.MapFeatures;
+        MapLayerDtos = MapProjectDto.Layers;
 
-        UpdateMapLayerDto = new UpdateMapLayerDto
+        UpdateMapProjectDto = new UpdateMapProjectDto
         {
-            Name = MapLayerDto.Name,
-            Description = MapLayerDto.Description,
-            Layer = MapLayerDto.Layer,
-            MapFeatureIds = MapLayerDto.MapFeatures.Select(f => f.Id).ToList()
+            Name = MapProjectDto.Name,
+            DisplayName = MapProjectDto.DisplayName,
+            Url = MapProjectDto.Url,
+            IsPublished = MapProjectDto.IsPublished,
+            VisibleStart = MapProjectDto.VisibleStart,
+            VisibleEnd = MapProjectDto.VisibleEnd,
+            LayerIds = MapProjectDto.Layers.Select(l => l.Id).ToList()
         };
 
         await base.OnInitializedAsync();
     }
 
-    private async Task LoadGeoJson()
+    List<string> layerIds = new();
+    private async Task RemoveLayers()
     {
-        if (!MapFeatureDtos.Any())
-            return;
-
-        try
+        foreach (var layerId in layerIds)
         {
-            await Map.RemoveLayer("GeoJsonLayerId");
-            await Map.RemoveSource("maine");
-        }
-        catch (Exception)
-        {
-            // ignored
-        }
-
-        await Map.AddSource("maine", new GeoJsonSource()
-        {
-            Data = new FeatureCollection()
+            try
             {
-                Features = new List<IFeature>(MapFeatureDtos.Select(mf => new FeatureFeature()
-                {
-                    Geometry = JsonSerializer.Deserialize<IGeometry>(mf.GeometryJson)
-                }))
+                await Map.RemoveLayer(layerId);
+                await Map.RemoveSource(layerId);
             }
-        });
-
-        await Map.AddLayer(new FillLayer()
-        {
-            Id = "GeoJsonLayerId",
-            Source = "maine",
-            Paint = new FillLayerPaint()
+            catch (Exception e)
             {
-                FillColor = "#088",
-                FillOpacity = 0.8,
-                FillOutlineColor = "#008888"
+                // Ignore
             }
-        });
-
-        if (MapFeatureDtos.Any())
-        {
-            // Get the coordinates from the polygon
-            var bounds = new LngLatBounds
-            {
-                Southwest = JsonSerializer.Deserialize<IGeometry>(MapFeatureDtos.First().GeometryJson).GetBounds().Southwest,
-                Northeast = JsonSerializer.Deserialize<IGeometry>(MapFeatureDtos.First().GeometryJson).GetBounds().Northeast,
-            };
-
-            foreach (var feature in MapFeatureDtos)
-            {
-                var geometry = JsonSerializer.Deserialize<IGeometry>(feature.GeometryJson);
-                bounds.Extend(geometry.GetBounds());
-            }
-
-            // Options for fit bounds
-            var fitBoundsOptions = new FitBoundOptions
-            {
-                Padding = 50, // Add padding around the bounds (in pixels)
-                MaxZoom = 19 // Optional: limit max zoom level
-            };
-
-            // Fit the map to the bounds
-            await Map.FitBounds(bounds, fitBoundsOptions);
         }
+
+        layerIds.RemoveAll(l => true);
     }
 
-    private async Task HandleFeaturesSelected(List<MapFeatureDto> items)
+    private async Task LoadGeoJson()
     {
-        MapFeatureDtos = items;
-        UpdateMapLayerDto.MapFeatureIds = items.Select(i => i.Id).ToList();
+        await RemoveLayers();
+
+        foreach (var layerDto in MapLayerDtos)
+        {
+            await Map.AddSource(layerDto.Id.ToString(), new GeoJsonSource()
+            {
+                Data = new FeatureCollection()
+                {
+                    Features = new List<IFeature>(layerDto.MapFeatures.Select(mf => new FeatureFeature()
+                    {
+                        Geometry = JsonSerializer.Deserialize<IGeometry>(mf.GeometryJson)
+                    }))
+                }
+            });
+            
+            layerIds.Add(layerDto.Id.ToString());
+
+            await Map.AddLayer(new FillLayer()
+            {
+                Id = layerDto.Id.ToString(),
+                Source = layerDto.Id.ToString(),
+                Paint = new FillLayerPaint()
+                {
+                    FillColor = "#088",
+                    FillOpacity = 0.8,
+                    FillOutlineColor = "#008888"
+                }
+            });
+        }
+
+        var mapFeatureDtos = MapLayerDtos.SelectMany(ml => ml.MapFeatures).ToList();
+        
+        if (!mapFeatureDtos.Any())
+            return;
+            
+        // Get the coordinates from the polygon
+        var bounds = new LngLatBounds
+        {
+            Southwest = JsonSerializer.Deserialize<IGeometry>(mapFeatureDtos.First().GeometryJson).GetBounds().Southwest,
+            Northeast = JsonSerializer.Deserialize<IGeometry>(mapFeatureDtos.First().GeometryJson).GetBounds().Northeast,
+        };
+        
+        foreach (var feature in mapFeatureDtos)
+        {
+            var geometry = JsonSerializer.Deserialize<IGeometry>(feature.GeometryJson);
+            bounds.Extend(geometry.GetBounds());
+        }
+
+        // Options for fit bounds
+        var fitBoundsOptions = new FitBoundOptions
+        {
+            Padding = 50, // Add padding around the bounds (in pixels)
+            MaxZoom = 19 // Optional: limit max zoom level
+        };
+
+        // Fit the map to the bounds
+        await Map.FitBounds(bounds, fitBoundsOptions);
+    }
+
+    private async Task HandleLayersSelected(List<MapLayerDto> items)
+    {
+        MapLayerDtos = items;
+        UpdateMapProjectDto.LayerIds = items.Select(i => i.Id).ToList();
 
         try
         {
@@ -215,29 +234,5 @@
         {
             // ignored
         }
-    }
-
-    private readonly string _sz = "40px";
-    private string _selectedColor = "#0d6efd";
-
-    // Create a list of Bootstrap colors
-    private readonly List<string> _bootstrapColors = new List<string>
-    {
-        "#0d6efd", // primary (blue)
-        "#6610f2", // indigo
-        "#6f42c1", // purple
-        "#d63384", // pink
-        "#dc3545", // danger (red)
-        "#fd7e14", // orange
-        "#ffc107", // warning (yellow)
-        "#198754", // success (green)
-        "#20c997", // teal
-        "#0dcaf0", // info (cyan)
-        "#adb5bd" // gray
-    };
-
-    private void SelectColor(string color)
-    {
-        _selectedColor = color;
     }
 }
