@@ -11,4 +11,7 @@ public interface IMapProjectService
     Task<MapProject> Create(NewMapProjectDto dto);
     Task<MapProject> Update(Guid id, UpdateMapProjectDto dto);
     Task Delete(Guid id);
+    
+    // New methods for public access to published projects
+    Task<MapProject?> GetPublished(Guid id);
 }

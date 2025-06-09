@@ -32,6 +32,23 @@ public class MapProjectRepository : IMapProjectRepository
             .SingleOrDefaultAsync(t => t.Id == id);
     }
 
+    public async Task<MapProject?> GetPublished(Guid id)
+    {
+        var currentDate = DateTimeOffset.UtcNow;
+
+        return await _context.MapProjects
+            .Include(mp => mp.MapProjectLayers)
+            .ThenInclude(mpl => mpl.MapLayer)
+            .ThenInclude(ml => ml.MapFeatureLayers)
+            .ThenInclude(mfl => mfl.MapFeature)
+            .IgnoreQueryFilters()
+            .Where(mp => mp.DeletedAt == null)
+            .SingleOrDefaultAsync(mp => mp.Id == id &&
+                                        mp.IsPublished &&
+                                        mp.VisibleStart <= currentDate &&
+                                        (mp.VisibleEnd == null || mp.VisibleEnd >= currentDate));
+    }
+
     public void Create(MapProject mapProject)
     {
         _context.MapProjects.Add(mapProject);

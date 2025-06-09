@@ -36,6 +36,17 @@ public class MapProjectService : IMapProjectService
         return mapProject;
     }
 
+    public async Task<MapProject?> GetPublished(Guid id)
+    {
+        var mapProject = await _mapProjectRepository.GetPublished(id);
+        if (mapProject is null)
+        {
+            throw new NotFoundException("Published map project not found");
+        }
+        
+        return mapProject;
+    }
+
     public async Task<MapProject> Create(NewMapProjectDto dto)
     {
         var mapProject = MapProjectMapper.MapToEntity(dto);

@@ -32,7 +32,30 @@ public static class MapProjectApi
         api.MapDelete("/{id:guid}", DeleteProject)
             .WithName("Delete Project");
 
+        // Add public endpoint group that doesn't require authorization
+        var publicApi = app.MapGroup("Public/Project");
+        
+        publicApi.MapGet("/", GetPublishedProjects)
+            .WithName("Get Published Projects");
+            
+        publicApi.MapGet("/{id:guid}", GetPublishedProject)
+            .WithName("Get Published Project");
+    
         return api;
+    }
+    
+    public static async Task<Results<Ok<MapProjectDto>, NotFound, ProblemHttpResult>> GetPublishedProject(
+        IMapProjectService projectService, 
+        [FromRoute] Guid id)
+    {
+        var project = await projectService.GetPublished(id);
+    
+        if (project is null)
+        {
+            throw new NotFoundException();
+        }
+    
+        return TypedResults.Ok(MapProjectMapper.MapToDtoWithLayers(project));
     }
 
     public static async Task<Results<Ok<PaginatedListDto<MapProjectDto>>, ProblemHttpResult>> GetProjects(

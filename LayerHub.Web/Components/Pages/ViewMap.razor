@@ -1,0 +1,169 @@
+@page "/Map/{Id:guid}"
+@using System.Text.Json
+@using Community.Blazor.MapLibre.Models
+@using Community.Blazor.MapLibre.Models.Camera
+@using Community.Blazor.MapLibre.Models.Feature
+@using Community.Blazor.MapLibre.Models.Layers
+@using Community.Blazor.MapLibre.Models.Sources
+@using LayerHub.Shared.Dto.MapLayer
+@using LayerHub.Shared.Dto.MapProject
+@using LayerHub.Web.Application.Services
+
+@inject IHttpService HttpService
+@inject NavigationManager NavigationManager
+
+<div class="container-fluid vh-100 d-flex flex-column p-0">
+    @if (MapProjectDto != null)
+    {
+        <div class="p-3 bg-light">
+            <h3>@MapProjectDto.DisplayName</h3>
+        </div>
+        
+        <div class="flex-grow-1">
+            <MapLibre @ref="Map" Options="_mapOptions" Class="w-100 h-100"
+                      @rendermode="InteractiveServer" OnLoad="OnMapLoad"/>
+        </div>
+    }
+    else
+    {
+        <div class="d-flex justify-content-center align-items-center h-100">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    }
+</div>
+
+@code
+{
+    private MapLibre Map { get; set; } = new MapLibre();
+
+    private readonly MapOptions _mapOptions = new()
+    {
+        Container = "UniqueMapId",
+        Style = "https://tiles.openfreemap.org/styles/liberty",
+        Center = new LngLat()
+        {
+            Latitude = 48.725837,
+            Longitude = 18.752835
+        },
+        Zoom = 14,
+        Pitch = 20
+    };
+
+    [Parameter] public Guid Id { get; set; }
+
+    public MapProjectDto? MapProjectDto { get; set; }
+    public List<MapLayerDto> MapLayerDtos { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            MapProjectDto = await HttpService.Get<MapProjectDto>($"Public/Project/{Id}");
+            MapLayerDtos = MapProjectDto.Layers;
+        }
+        catch (Exception)
+        {
+            // Handle error, could redirect to error page
+            NavigationManager.NavigateTo("/");
+        }
+
+        await base.OnInitializedAsync();
+    }
+
+    private async Task OnMapLoad(EventArgs obj)
+    {
+        try
+        {
+            await LoadGeoJson();
+        }
+        catch (Exception)
+        {
+            // ignored
+        }
+    }
+
+    List<string> layerIds = new();
+    private async Task RemoveLayers()
+    {
+        foreach (var layerId in layerIds)
+        {
+            try
+            {
+                await Map.RemoveLayer(layerId);
+                await Map.RemoveSource(layerId);
+            }
+            catch
+            {
+                // Ignore
+            }
+        }
+
+        layerIds.RemoveAll(l => true);
+    }
+
+    private async Task LoadGeoJson()
+    {
+        if (MapLayerDtos == null || !MapLayerDtos.Any())
+            return;
+
+        await RemoveLayers();
+
+        foreach (var layerDto in MapLayerDtos)
+        {
+            await Map.AddSource(layerDto.Id.ToString(), new GeoJsonSource()
+            {
+                Data = new FeatureCollection()
+                {
+                    Features = new List<IFeature>(layerDto.MapFeatures.Select(mf => new FeatureFeature()
+                    {
+                        Geometry = JsonSerializer.Deserialize<IGeometry>(mf.GeometryJson)
+                    }))
+                }
+            });
+            
+            layerIds.Add(layerDto.Id.ToString());
+
+            await Map.AddLayer(new FillLayer()
+            {
+                Id = layerDto.Id.ToString(),
+                Source = layerDto.Id.ToString(),
+                Paint = new FillLayerPaint()
+                {
+                    FillColor = "#088",
+                    FillOpacity = 0.8,
+                    FillOutlineColor = "#008888"
+                }
+            });
+        }
+
+        var mapFeatureDtos = MapLayerDtos.SelectMany(ml => ml.MapFeatures).ToList();
+        
+        if (!mapFeatureDtos.Any())
+            return;
+            
+        // Get the coordinates from the polygon
+        var bounds = new LngLatBounds
+        {
+            Southwest = JsonSerializer.Deserialize<IGeometry>(mapFeatureDtos.First().GeometryJson).GetBounds().Southwest,
+            Northeast = JsonSerializer.Deserialize<IGeometry>(mapFeatureDtos.First().GeometryJson).GetBounds().Northeast,
+        };
+        
+        foreach (var feature in mapFeatureDtos)
+        {
+            var geometry = JsonSerializer.Deserialize<IGeometry>(feature.GeometryJson);
+            bounds.Extend(geometry.GetBounds());
+        }
+
+        // Options for fit bounds
+        var fitBoundsOptions = new FitBoundOptions
+        {
+            Padding = 50,
+            MaxZoom = 19
+        };
+
+        // Fit the map to the bounds
+        await Map.FitBounds(bounds, fitBoundsOptions);
+    }
+}

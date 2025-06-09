@@ -10,4 +10,7 @@ public interface IMapProjectRepository
     void Create(MapProject mapProject);
     void Update(MapProject mapProject);
     void Delete(MapProject mapProject);
+    
+    // New methods for public access to published projects
+    Task<MapProject?> GetPublished(Guid id);
 }
