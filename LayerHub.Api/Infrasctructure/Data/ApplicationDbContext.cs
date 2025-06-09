@@ -21,6 +21,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
     public virtual DbSet<MapFeature> MapFeatures { get; set; } = default!;
     public virtual DbSet<MapFeatureLayer> MapFeatureLayers { get; set; } = default!;
     public virtual DbSet<MapLayer> MapLayers { get; set; } = default!;
+    public virtual DbSet<MapProject> MapProjects { get; set; } = default!;
+    public virtual DbSet<MapProjectLayer> MapProjectLayers { get; set; } = default!;
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -52,6 +54,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
 
         builder.Entity<MapFeatureLayer>()
             .HasKey(mfl => new { mfl.MapFeatureId, mfl.MapLayerId });
+
+        builder.Entity<MapProjectLayer>()
+            .HasKey(mfl => new { mfl.MapProjectId, mfl.MapLayerId });
 
         // Query filters
         builder.Model.GetEntityTypes()

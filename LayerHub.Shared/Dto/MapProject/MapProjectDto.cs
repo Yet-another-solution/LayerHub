@@ -1,8 +1,9 @@
-using LayerHub.Shared.Models.Interfaces;
+using LayerHub.Shared.Dto.MapLayer;
+using LayerHub.Shared.Models;
 
-namespace LayerHub.Shared.Models;
+namespace LayerHub.Shared.Dto.MapProject;
 
-public class MapProject : ISoftDeletable, IOwned, ITrackable
+public class MapProjectDto
 {
     public Guid Id { get; set; }
     public required string Name { get; set; }
@@ -11,13 +12,7 @@ public class MapProject : ISoftDeletable, IOwned, ITrackable
     public bool IsPublished { get; set; }
     public DateTimeOffset VisibleStart { get; set; }
     public DateTimeOffset? VisibleEnd { get; set; }
-
-    public List<MapProjectLayer> MapProjectLayers { get; set; } = new();
-
-    // Interfaces
-    public DateTimeOffset? DeletedAt { get; set; }
-    public Guid OwnerId { get; set; }
-    public Tenant? Owner { get; set; }
+    public List<MapLayerDto> Layers { get; set; } = new();
     public DateTimeOffset CreatedAt { get; set; }
     public DateTimeOffset UpdatedAt { get; set; }
 }

@@ -1,8 +1,27 @@
 @page "/Manage/Maps"
+@using LayerHub.Shared.Dto.MapProject
+@using Microsoft.FluentUI.AspNetCore.Components
 
 @layout ManageLayout
 
-<h3>Index</h3>
+<PageTitle>Maps</PageTitle>
+
+<div mb-3>
+    <h1 class="h1">Maps</h1>
+</div>
+
+<PaginatedListView T="MapProjectDto" CancellationToken="ComponentDetached"
+                   GetUrl="/Project" 
+                   CreateUrl="/Manage/Maps/Create"
+                   EditUrl="@("/Manage/Map/{Id}/Edit")" >
+    <PropertyColumn TProp="string" TGridItem="MapProjectDto" Property="@(e => e.Name)"/>
+    <PropertyColumn TProp="string" TGridItem="MapProjectDto" Property="@(e => e.DisplayName ?? "")"/>
+    <TemplateColumn TGridItem="MapProjectDto" Title="Is Public">
+        @context.IsPublished
+    </TemplateColumn>
+    <PropertyColumn TProp="DateTimeOffset" TGridItem="MapProjectDto" Property="@(e => e.VisibleStart)"/>
+    <PropertyColumn TProp="DateTimeOffset?" TGridItem="MapProjectDto" Property="@(e => e.VisibleEnd)"/>
+</PaginatedListView>
 
 @code {
     

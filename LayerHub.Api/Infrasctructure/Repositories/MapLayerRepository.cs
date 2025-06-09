@@ -24,6 +24,8 @@ public class MapLayerRepository : IMapLayerRepository
     public async Task<PaginatedList<MapLayer>> Get(BasePaginator paginator, CancellationToken token)
     {
         var query = _context.MapLayers
+            .Include(ml => ml.MapFeatureLayers)
+            .ThenInclude(mfl => mfl.MapFeature)
             .AsQueryable();
 
         return await PaginatedList<MapLayer>.CreateAsync(query, paginator.Page, paginator.ItemsPerPage, token);

@@ -16,9 +16,6 @@
                    EditUrl="@("/Manage/Layers/{Id}/Edit")" >
     <PropertyColumn TProp="string" TGridItem="MapLayerDto" Property="@(e => e.Name)"/>
     <PropertyColumn TProp="string" TGridItem="MapLayerDto" Property="@(e => e.Description ?? "")"/>
-    <TemplateColumn TGridItem="MapLayerDto">
-        @context.MapFeatures.Count
-    </TemplateColumn>
 </PaginatedListView>
 
 @code {

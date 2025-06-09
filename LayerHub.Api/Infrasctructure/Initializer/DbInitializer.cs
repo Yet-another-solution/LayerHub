@@ -175,6 +175,17 @@ public class DbInitializer
                 _logger.LogInformation("Added {Count} map features from CSV to be saved", features.Count);
                 
                 // Group features by the first word
+                var map = new MapProject
+                {
+                    Id = Guid.CreateVersion7(),
+                    Name = "Handlová - Map",
+                    Url = "handlova-hater",
+                    IsPublished = true,
+                    VisibleStart = DateTimeOffset.UtcNow.AddDays(-20),
+                    OwnerId = Guid.Parse("3e76f4ef-a76c-4442-a931-573a00475e3d")
+                };
+                await _context.MapProjects.AddAsync(map);
+
                 var groupedFeatures = features.GroupBy(f => f.Name.Split(" ")[0]);
                 foreach (var group in groupedFeatures)
                 {
@@ -197,6 +208,12 @@ public class DbInitializer
                         };
                         await _context.MapFeatureLayers.AddAsync(featureLayer);
                     }
+
+                    await _context.MapProjectLayers.AddAsync(new MapProjectLayer
+                    {
+                        MapProjectId = map.Id,
+                        MapLayerId = mapLayer.Id,
+                    });
                 }
             }
             else

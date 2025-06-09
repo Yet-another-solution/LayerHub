@@ -10,6 +10,7 @@ public static class ApisExtension
         app.AddTenantApi();
         app.AddMapFeatureApi();
         app.AddMapLayerApi();
+        app.AddMapProjectApi();
 
         return app;
     }
