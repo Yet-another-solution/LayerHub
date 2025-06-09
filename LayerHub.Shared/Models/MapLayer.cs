@@ -24,7 +24,7 @@ public class MapLayer : ISoftDeletable, IOwned, ITrackable
     /// <summary>
     /// Gets or sets the serialized representation of the map layer.
     /// </summary>
-    public Layer? Layer { get; set; }
+    public JsonDocument? Layer { get; set; }
 
     /// <summary>
     /// Gets or sets the collection of feature layers associated with the map layer.

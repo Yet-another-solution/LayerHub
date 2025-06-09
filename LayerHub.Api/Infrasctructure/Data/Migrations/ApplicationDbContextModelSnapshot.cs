@@ -211,7 +211,6 @@ namespace LayerHub.Api.Migrations
                         .HasColumnType("text");
 
                     b.Property<JsonDocument>("Layer")
-                        .IsRequired()
                         .HasColumnType("jsonb");
 
                     b.Property<string>("Name")
