@@ -94,6 +94,12 @@ public partial class PaginatedListView<T> : CustomComponentBase
     public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
+    /// Represents a component that displays a paginated list of items and provides actions for manipulating the data.
+    /// </summary>
+    [Parameter]
+    public RenderFragment<T>? Actions { get; set; }
+
+    /// <summary>
     /// Gets or sets the string representation of the grid template columns.
     /// </summary>
     /// <remarks>

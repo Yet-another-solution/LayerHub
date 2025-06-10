@@ -1,6 +1,8 @@
 @page "/Manage/Maps"
 @using LayerHub.Shared.Dto.MapProject
+@using LayerHub.Web.Application.Services
 @using Microsoft.FluentUI.AspNetCore.Components
+@using Microsoft.JSInterop
 
 @layout ManageLayout
 
@@ -11,18 +13,46 @@
 </div>
 
 <PaginatedListView T="MapProjectDto" CancellationToken="ComponentDetached"
-                   GetUrl="/Project" 
+                   GetUrl="/Project"
                    CreateUrl="/Manage/Maps/Create"
-                   EditUrl="@("/Manage/Maps/{Id}/Edit")" >
-    <PropertyColumn TProp="string" TGridItem="MapProjectDto" Property="@(e => e.Name)"/>
-    <PropertyColumn TProp="string" TGridItem="MapProjectDto" Property="@(e => e.DisplayName ?? "")"/>
-    <TemplateColumn TGridItem="MapProjectDto" Title="Is Public">
-        @context.IsPublished
-    </TemplateColumn>
-    <PropertyColumn TProp="DateTimeOffset" TGridItem="MapProjectDto" Property="@(e => e.VisibleStart)"/>
-    <PropertyColumn TProp="DateTimeOffset?" TGridItem="MapProjectDto" Property="@(e => e.VisibleEnd)"/>
+                   EditUrl="@("/Manage/Maps/{Id}/Edit")">
+    <ChildContent>
+        <PropertyColumn TProp="string" TGridItem="MapProjectDto" Property="@(e => e.Name)"/>
+        <PropertyColumn TProp="string" TGridItem="MapProjectDto" Property="@(e => e.DisplayName ?? "")"/>
+        <TemplateColumn TGridItem="MapProjectDto" Title="Is Public">
+            @context.IsPublished
+        </TemplateColumn>
+        <PropertyColumn TProp="DateTimeOffset" TGridItem="MapProjectDto" Property="@(e => e.VisibleStart)"/>
+        <PropertyColumn TProp="DateTimeOffset?" TGridItem="MapProjectDto" Property="@(e => e.VisibleEnd)"/>
+    </ChildContent>
+    <Actions>
+        <div class="d-flex gap-2">
+            <button class="btn btn-outline-success" @onclick="() => DownloadGeoJson(context)">
+                <i class="bi bi-download me-1"></i> Download
+            </button>
+            <button class="btn btn-success" @onclick="() => NavigateToViewMap(context)">
+                <i class="bi bi-map me-1"></i> View Map
+            </button>
+        </div>
+    </Actions>
 </PaginatedListView>
 
 @code {
-    
+    [Inject] private NavigationManager NavigationManager { get; set; } = null!;
+    [Inject] private IHttpService HttpService { get; set; } = null!;
+    [Inject] private IConfiguration Configuration { get; set; } = null!;
+
+    private void DownloadGeoJson(MapProjectDto project)
+    {
+        var apiUrl = Configuration["services:api:https:0"] ?? "https://api:5000";
+        Console.WriteLine(apiUrl);
+        
+        // Navigate to the export endpoint in a new tab
+        NavigationManager.NavigateTo($"{apiUrl}/Public/Project/{project.Id}/export", forceLoad: true);
+    }
+
+    private void NavigateToViewMap(MapProjectDto project)
+    {
+        NavigationManager.NavigateTo($"/Map/{project.Id}");
+    }
 }

@@ -34,12 +34,13 @@ public static class MapProjectApi
 
         // Add public endpoint group that doesn't require authorization
         var publicApi = app.MapGroup("Public/Project");
-        
-        publicApi.MapGet("/", GetPublishedProjects)
-            .WithName("Get Published Projects");
             
         publicApi.MapGet("/{id:guid}", GetPublishedProject)
             .WithName("Get Published Project");
+            
+        publicApi.MapGet("/{id:guid}/export", ExportMapAsGeoJson)
+            .WithName("Export Map As GeoJson")
+            .Produces<object>(200, "application/json");
     
         return api;
     }
@@ -56,6 +57,60 @@ public static class MapProjectApi
         }
     
         return TypedResults.Ok(MapProjectMapper.MapToDtoWithLayers(project));
+    }
+    
+    // Endpoint to export map data as GeoJSON
+    public static async Task<IResult> ExportMapAsGeoJson(
+        IMapProjectService projectService, 
+        [FromRoute] Guid id)
+    {
+        var project = await projectService.GetPublished(id);
+    
+        if (project is null)
+        {
+            throw new NotFoundException();
+        }
+        
+        var projectDto = MapProjectMapper.MapToDtoWithLayers(project);
+        
+        // Convert to GeoJSON FeatureCollection
+        var features = new List<object>();
+        
+        foreach (var layer in projectDto.Layers)
+        {
+            foreach (var feature in layer.MapFeatures)
+            {
+                var featureObject = new
+                {
+                    type = "Feature",
+                    geometry = System.Text.Json.JsonSerializer.Deserialize<object>(feature.GeometryJson),
+                    properties = new 
+                    {
+                        name = feature.Name,
+                        displayName = feature.DisplayName,
+                        description = feature.Description,
+                        layerName = layer.Name,
+                        projectName = projectDto.Name
+                    }
+                };
+                
+                features.Add(featureObject);
+            }
+        }
+        
+        var geoJson = new
+        {
+            type = "FeatureCollection",
+            features,
+            properties = new
+            {
+                name = projectDto.Name,
+                displayName = projectDto.DisplayName,
+                exportedAt = DateTimeOffset.UtcNow
+            }
+        };
+        
+        return Results.Ok(geoJson);
     }
 
     public static async Task<Results<Ok<PaginatedListDto<MapProjectDto>>, ProblemHttpResult>> GetProjects(

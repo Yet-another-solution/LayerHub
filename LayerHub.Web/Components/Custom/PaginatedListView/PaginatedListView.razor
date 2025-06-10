@@ -101,7 +101,7 @@
                             AutoFit="@(GridTemplateColumns == null)" 
                             GridTemplateColumns="@GridTemplateColumns">
                 @ChildContent
-                @if (EditUrl is not null || DeleteUrl is not null || DetailsUrl is not null)
+                @if (EditUrl is not null || DeleteUrl is not null || DetailsUrl is not null || Actions is not null)
                 {
                     <TemplateColumn Title="Actions" Class="gap-2 d-flex">
                         @if (!string.IsNullOrEmpty(DetailsUrl))
@@ -125,6 +125,7 @@
                                 Delete
                             </button>
                         }
+                        @Actions?.Invoke(context)
                     </TemplateColumn>
                 }
             </FluentDataGrid>
