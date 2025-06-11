@@ -1,0 +1,40 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: layerhubpostgresql
+  labels:
+    app: layerhubpostgresql
+spec:
+  serviceName: "layerhubpostgresql"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: layerhubpostgresql
+  template:
+    metadata:
+      labels:
+        app: layerhubpostgresql
+    spec:
+      containers:
+        - name: layerhubpostgresql
+          image: docker.io/library/postgres:17.4
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5432
+          envFrom:
+            - configMapRef:
+                name: layerhubpostgresql-env
+            - secretRef:
+                name: layerhubpostgresql-secrets
+          volumeMounts:
+            - name: apphost-feed4158f1-layerhubpostgresql-data
+              mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+    - metadata:
+        name: apphost-feed4158f1-layerhubpostgresql-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi

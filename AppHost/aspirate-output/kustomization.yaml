@@ -1,0 +1,14 @@
+namespace: layerhub
+
+resources:
+- LayerHubPostgreSql
+- LayerHubMongo
+- api
+- web
+- namespace.yaml
+- dashboard.yaml
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+
