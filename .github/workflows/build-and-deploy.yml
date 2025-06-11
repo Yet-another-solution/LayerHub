@@ -1,11 +1,10 @@
 name: LayerHub - build and test
 
 on:
-# Comment out automatic triggers for now
-#  push:
-#    branches: [ main, development ]
-#  pull_request:
-#    branches: [ development ]
+  push:
+    branches: [ main, development ]
+  pull_request:
+    branches: [ development ]
 
   # Add manual workflow dispatch trigger
   workflow_dispatch:

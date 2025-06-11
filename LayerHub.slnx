@@ -6,6 +6,7 @@
     <File Path="compose.yaml" />
     <File Path="README.md" />
     <File Path=".gitignore" />
+    <File Path=".github\workflows\build-and-deploy.yml" />
   </Folder>
   <Folder Name="/Tests/">
     <Project Path="LayerHub.Api.Tests\LayerHub.Api.Tests.csproj" Type="Classic C#" />
