@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
       - name: api
-        image: ghcr.io/yet-another-solution/layerhub-web:latest
+        image: ghcr.io/yet-another-solution/layerhub-api:latest
         imagePullPolicy: Always
         ports:
         - name: http
