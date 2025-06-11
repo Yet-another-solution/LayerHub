@@ -5,6 +5,7 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <ContainerImageTags>0.0.2;latest</ContainerImageTags>
         <ContainerRegistry>ghcr.io</ContainerRegistry>
         <ContainerRepository>Yet-another-solution/LayerHub-Web</ContainerRepository>
 
