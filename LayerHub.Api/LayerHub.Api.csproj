@@ -7,7 +7,7 @@
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
         <ContainerImageTags>0.0.2;latest</ContainerImageTags>
         <ContainerRegistry>ghcr.io</ContainerRegistry>
-        <ContainerRepository>Yet-another-solution/LayerHub-Web</ContainerRepository>
+        <ContainerRepository>Yet-another-solution/LayerHub-Api</ContainerRepository>
 
         <ContainerRuntimeIdentifiers>linux-x64;linux-arm64</ContainerRuntimeIdentifiers>
     </PropertyGroup>
