@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: layerhub-ingress
+  namespace: layerhub
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web, websecure
+spec:
+  tls:
+    - hosts:
+        - layerhub.mmlw.net
+      secretName: cloudflare-origin-cert
+  rules:
+    - host: layerhub.mmlw.net
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: web
+                port:
+                  number: 8080

@@ -61,3 +61,4 @@ nunit-*.xml
 /LayerHub.sln.DotSettings.user
 /AppHost/docker-compose-artifacts/.env
 /AppHost/aspirate-state.json
+/.setup/
