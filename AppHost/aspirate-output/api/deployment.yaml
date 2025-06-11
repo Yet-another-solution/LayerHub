@@ -32,4 +32,6 @@ spec:
             name: api-env
         - secretRef:
             name: api-secrets
+        - secretRef:
+            name: jwt-signing-key
       terminationGracePeriodSeconds: 180

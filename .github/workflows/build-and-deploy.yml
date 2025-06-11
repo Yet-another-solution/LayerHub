@@ -68,8 +68,8 @@ jobs:
 
       - name: Build and Push API Container
         run: |
-          dotnet publish ./LayerHub.Api/LayerHub.Api.csproj -c Release --os linux --arch x64 /t:PublishContainer
+          dotnet publish ./LayerHub.Api/LayerHub.Api.csproj -c Release --os linux /t:PublishContainer
 
       - name: Build and Push Web Container
         run: |
-          dotnet publish ./LayerHub.Web/LayerHub.Web.csproj -c Release --os linux --arch x64 /t:PublishContainer
+          dotnet publish ./LayerHub.Web/LayerHub.Web.csproj -c Release --os linux /t:PublishContainer
