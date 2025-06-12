@@ -8,6 +8,7 @@
         <ContainerImageTags>0.1.0;latest</ContainerImageTags>
         <ContainerRegistry>ghcr.io</ContainerRegistry>
         <ContainerRepository>Yet-another-solution/LayerHub-Web</ContainerRepository>
+        <RuntimeIdentifiers>linux-x64;linux-arm64</RuntimeIdentifiers>
 
         <ContainerRuntimeIdentifiers>linux-x64;linux-arm64</ContainerRuntimeIdentifiers>
     </PropertyGroup>
