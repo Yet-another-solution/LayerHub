@@ -66,10 +66,17 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+
       - name: Build and Push API Container
         run: |
-          dotnet publish ./LayerHub.Api/LayerHub.Api.csproj -c Release --os linux /t:PublishContainer
+          dotnet publish ./LayerHub.Api/LayerHub.Api.csproj -c Release --os linux \
+            -p:ContainerRuntimeIdentifiers="linux-x64;linux-arm64" \
+            -p:ContainerImageTags="latest" \
+            /t:PublishContainer
 
       - name: Build and Push Web Container
         run: |
-          dotnet publish ./LayerHub.Web/LayerHub.Web.csproj -c Release --os linux /t:PublishContainer
+          dotnet publish ./LayerHub.Web/LayerHub.Web.csproj -c Release --os linux \
+            -p:ContainerRuntimeIdentifiers="linux-x64;linux-arm64" \
+            -p:ContainerImageTags="latest" \
+            /t:PublishContainer
